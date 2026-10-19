@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="cs" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalistenika Tracker & Plán</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            700: '#0f766e'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Awesome Ikony -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans">
+
+    <!-- Navigace -->
+    <header class="bg-slate-800 border-b border-slate-700 sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-brand-500 text-slate-900 p-2 rounded-lg">
+                    <i class="fa-solid font-bold fa-dumbbell text-xl"></i>
+                </div>
+                <h1 class="text-xl font-bold tracking-wide">CaliTracker</h1>
+            </div>
+            <nav class="flex space-x-2">
+                <button onclick="switchTab('program')" id="tab-btn-program" class="px-4 py-2 rounded-lg text-sm transition bg-brand-500 text-slate-900 font-semibold">
+                    <i class="fa-solid fa-calendar-days mr-1"></i> Plán
+                </button>
+                <button onclick="switchTab('tracker')" id="tab-btn-tracker" class="px-4 py-2 rounded-lg text-sm transition text-slate-400 hover:text-white hover:bg-slate-700">
+                    <i class="fa-solid fa-chart-line mr-1"></i> Záznamník & Graf
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hlavní Obsah -->
+    <main class="flex-grow max-w-5xl w-full mx-auto p-4 space-y-6">
+
+        <!-- ZÁLOŽKA: TRÉNINKOVÝ PLÁN -->
+        <section id="tab-program" class="space-y-6">
+            <div class="bg-slate-800 rounded-xl p-6 border border-slate-700 shadow-lg">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-2xl font-bold text-white flex items-center">
+                        <i class="fa-solid fa-fire text-amber-500 mr-2"></i> 2týdenní Blok: Front Lever & HSPU
+                    </h2>
+                    <span class="bg-brand-500/10 text-brand-500 text-xs font-semibold px-3 py-1 rounded-full border border-brand-500/20">Aktivní cyklus</span>
+                </div>
+                <p class="text-slate-400 text-sm">
+                    Fokus na budování síly pro 10s+ čistý hold ve Front Leveru a progresi Handstand Push-Ups na zemi i bradlech.
+                </p>
+            </div>
+
+            <!-- Týden 1 -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-bold text-slate-300 flex items-center">
+                    <i class="fa-solid fa-layer-group text-brand-500 mr-2"></i> TÝDEN 1: Akumulace objemu
+                </h3>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <!-- Den A -->
+                    <div class="bg-slate-800/80 rounded-xl p-5 border border-slate-700/80 hover:border-slate-600 transition">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="font-bold text-brand-500 text-sm uppercase">Pondělí / Čtvrtek</span>
+                            <span class="text-xs bg-slate-700 px-2.5 py-1 rounded text-slate-300">Tah (FL Fokus)</span>
+                        </div>
+                        <ul class="space-y-2 text-sm text-slate-300">
+                            <li class="flex justify-between border-b border-slate-700/50 pb-1">
+                                <span>1. Banded Full Front Lever Hold</span>
+                                <span class="font-semibold text-slate-100">4x 15-20s</span>
+                            </li>
+                            <li class="flex justify-between border-b border-slate-700/50 pb-1">
+                                <span>2. Full FL Negative Excentriky</span>
+                                <span class="font-semibold text-slate-100">3x 3 op.</span>
+                            </li>
+                            <li class="flex justify-between border-b border-slate-700/50 pb-1">
+                                <span>3. Tuck FL Pull-ups</span>
+                                <span class="font-semibold text-slate-100">4x 4-6 op.</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span>4. Dragon Flags / Hollow Hold</span>
+                                <span class="font-semibold text-slate-100">3x max</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Den B -->
+                    <div class="bg-slate-800/80 rounded-xl p-5 border border-slate-700/80 hover:border-slate-600 transition">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="font-bold text-indigo-400 text-sm uppercase">Úterý / Pátek</span>
+                            <span class="text-xs bg-slate-700 px-2.5 py-1 rounded text-slate-300">Tlak (HSPU Fokus)</span>
+                        </div>
+                        <ul class="space-y-2 text-sm text-slate-300">
+                            <li class="flex justify-between border-b border-slate-700/50 pb-1">
+                                <span>1. Handstand Push-Ups (Zem)</span>
+                                <span class="font-semibold text-slate-100">4x 3-5 op.</span>
+                            </li>
+                            <li class="flex justify-between border-b border-slate-700/50 pb-1">
+                                <span>2. HSPU na Bradlech (s dopomocí/negativy)</span>
+                                <span class="font-semibold text-slate-100">3x 4 op.</span>
+                            </li>
+                            <li class="flex justify-between border-b border-slate-700/50 pb-1">
+                                <span>3. Press to Handstand negativy</span>
+                                <span class="font-semibold text-slate-100">3x 3 op.</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span>4. Dips na bradlech se zátěží</span>
+                                <span class="font-semibold text-slate-100">4x 6 op.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Týden 2 -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-bold text-slate-300 flex items-center">
+                    <i class="fa-solid fa-bolt text-amber-400 mr-2"></i> TÝDEN 2: Intenzita & Max Holdy
+                </h3>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <!-- Den C -->
+                    <div class="bg-slate-800/80 rounded-xl p-5 border border-slate-700/80 hover:border-slate-600 transition">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="font-bold text-brand-500 text-sm uppercase">Pondělí / Čtvrtek</span>
+                            <span class="text-xs bg-slate-700 px-2.5 py-1 rounded text-slate-300">Tah (Max FL)</span>
+                        </div>
+                        <ul class="space-y-2 text-sm text-slate-300">
+                            <li class="flex justify-between border-b border-slate-700/50 pb-1">
+                                <span class="text-amber-400 font-medium">1. Unassisted Full FL Max Hold</span>
+                                <span class="font-semibold text-amber-400">3x MAX (Cíl 6-8s)</span>
+                            </li>
+                            <li class="flex justify-between border-b border-slate-700/50 pb-1">
+                                <span>2. Banded FL Holds (Slabá guma)</span>
+                                <span class="font-semibold text-slate-100">3x 10s</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span>3. Straddle FL Touch Raises</span>
+                                <span class="font-semibold text-slate-100">4x 5 op.</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Den D -->
+                    <div class="bg-slate-800/80 rounded-xl p-5 border border-slate-700/80 hover:border-slate-600 transition">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="font-bold text-indigo-400 text-sm uppercase">Sobota</span>
+                            <span class="text-xs bg-amber-500/20 text-amber-400 px-2.5 py-1 rounded font-semibold">PR Test Day</span>
+                        </div>
+                        <ul class="space-y-2 text-sm text-slate-300">
+                            <li class="flex justify-between border-b border-slate-700/50 pb-1">
+                                <span>1. Full Front Lever Max Duration</span>
+                                <span class="font-semibold text-amber-400">TEST PR ⏱️</span>
+                            </li>
+                            <li class="flex justify-between border-b border-slate-700/50 pb-1">
+                                <span>2. HSPU Zem Max Reps</span>
+                                <span class="font-semibold text-amber-400">TEST PR ⏱️</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span>3. HSPU Bradla Max Reps</span>
+                                <span class="font-semibold text-amber-400">TEST PR ⏱️</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ZÁLOŽKA: ZÁZNAMNÍK & GRAF -->
+        <section id="tab-tracker" class="space-y-6 hidden">
+
+            <!-- Osobní Rekordy (PRs) -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 relative overflow-hidden">
+                    <div class="text-xs text-slate-400 font-medium">Full Front Lever</div>
+                    <div class="text-2xl font-black text-brand-500 mt-1" id="pr-fl">0s</div>
+                    <div class="text-[10px] text-slate-500 mt-1">Nejdelší výdrž</div>
+                </div>
+                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 relative overflow-hidden">
+                    <div class="text-xs text-slate-400 font-medium">HSPU (Zem)</div>
+                    <div class="text-2xl font-black text-indigo-400 mt-1" id="pr-hspu-ground">0 op.</div>
+                    <div class="text-[10px] text-slate-500 mt-1">Max opakování</div>
+                </div>
+                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 relative overflow-hidden">
+                    <div class="text-xs text-slate-400 font-medium">HSPU (Bradla)</div>
+                    <div class="text-2xl font-black text-purple-400 mt-1" id="pr-hspu-parallettes">0 op.</div>
+                    <div class="text-[10px] text-slate-500 mt-1">Max opakování</div>
+                </div>
+                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 relative overflow-hidden">
+                    <div class="text-xs text-slate-400 font-medium">Tuck FL Pull-ups</div>
+                    <div class="text-2xl font-black text-amber-400 mt-1" id="pr-tuck-pulls">0 op.</div>
+                    <div class="text-[10px] text-slate-500 mt-1">Max opakování</div>
+                </div>
+            </div>
+
+            <!-- Formulář pro Přidání Záznamu -->
+            <div class="bg-slate-800 rounded-xl p-5 border border-slate-700">
+                <h3 class="text-lg font-bold text-white mb-4 flex items-center">
+                    <i class="fa-solid fa-plus-circle text-brand-500 mr-2"></i> Zapsat nový tréninkový kousek
+                </h3>
+                <form id="add-log-form" class="grid md:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Datum</label>
+                        <input type="date" id="input-date" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Cvik</label>
+                        <select id="input-exercise" required onchange="handleExerciseChange()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500">
+                            <option value="Full Front Lever">Full Front Lever (sekundy)</option>
+                            <option value="HSPU (Zem)">HSPU - Zem (opakování)</option>
+                            <option value="HSPU (Bradla)">HSPU - Bradla (opakování)</option>
+                            <option value="Tuck FL Pull-ups">Tuck FL Pull-ups (opakování)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1" id="value-label">Hodnota (sekundy)</label>
+                        <input type="number" step="0.5" id="input-value" required placeholder="např. 6" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500">
+                    </div>
+                    <div class="flex items-end">
+                        <button type="submit" class="w-full bg-brand-500 hover:bg-brand-600 text-slate-900 font-bold py-2 px-4 rounded-lg transition text-sm flex items-center justify-center">
+                            <i class="fa-solid fa-floppy-disk mr-2"></i> Uložit Výsledek
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Interaktivní Graf -->
+            <div class="bg-slate-800 rounded-xl p-5 border border-slate-700 space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <h3 class="text-lg font-bold text-white flex items-center">
+                        <i class="fa-solid fa-chart-line text-indigo-400 mr-2"></i> Graf Progresu
+                    </h3>
+                    <div class="flex items-center space-x-2">
+                        <label class="text-xs text-slate-400">Filtr cviku:</label>
+                        <select id="chart-filter" onchange="updateChart()" class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-400">
+                            <option value="Full Front Lever">Full Front Lever</option>
+                            <option value="HSPU (Zem)">HSPU - Zem</option>
+                            <option value="HSPU (Bradla)">HSPU - Bradla</option>
+                            <option value="Tuck FL Pull-ups">Tuck FL Pull-ups</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="h-64 relative">
+                    <canvas id="progressChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Historie Záznamů -->
+            <div class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden">
+                <div class="p-4 border-b border-slate-700 flex justify-between items-center">
+                    <h3 class="text-lg font-bold text-white">Historie Záznamů</h3>
+                    <span class="text-xs text-slate-400" id="logs-count">0 položek</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-300">
+                        <thead class="bg-slate-900/50 text-slate-400 text-xs uppercase border-b border-slate-700">
+                            <tr>
+                                <th class="p-3">Datum</th>
+                                <th class="p-3">Cvik</th>
+                                <th class="p-3">Výkon</th>
+                                <th class="p-3 text-right">Akce</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-tbody" class="divide-y divide-slate-700/50">
+                            <!-- Dynamicky vložené záznamy -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Skripty -->
+    <script>
+        const initialLogs = [
+            { id: '1', date: '2026-09-15', exercise: 'Full Front Lever', value: 3.5 },
+            { id: '2', date: '2026-09-22', exercise: 'Full Front Lever', value: 4.0 },
+            { id: '3', date: '2026-10-01', exercise: 'Full Front Lever', value: 5.0 },
+            { id: '4', date: '2026-10-05', exercise: 'HSPU (Zem)', value: 4 },
+            { id: '5', date: '2026-10-12', exercise: 'HSPU (Zem)', value: 5 },
+            { id: '6', date: '2026-10-06', exercise: 'HSPU (Bradla)', value: 3 },
+            { id: '7', date: '2026-10-14', exercise: 'HSPU (Bradla)', value: 5 },
+            { id: '8', date: '2026-10-10', exercise: 'Tuck FL Pull-ups', value: 3 }
+        ];
+
+        let logs = [];
+        try {
+            const saved = localStorage.getItem('calisthenics_logs_v1');
+            logs = saved ? JSON.parse(saved) : initialLogs;
+        } catch (err) {
+            logs = initialLogs;
+        }
+
+        let chartInstance = null;
+
+        // Nastavení dnešního data
+        try {
+            document.getElementById('input-date').valueAsDate = new Date();
+        } catch(e) {}
+
+        function saveLogs() {
+            try {
+                localStorage.setItem('calisthenics_logs_v1', JSON.stringify(logs));
+            } catch (e) {}
+        }
+
+        function switchTab(tab) {
+            const btnProg = document.getElementById('tab-btn-program');
+            const btnTrack = document.getElementById('tab-btn-tracker');
+            const tabProg = document.getElementById('tab-program');
+            const tabTrack = document.getElementById('tab-tracker');
+
+            if (tab === 'program') {
+                tabProg.classList.remove('hidden');
+                tabTrack.classList.add('hidden');
+                btnProg.className = "px-4 py-2 rounded-lg text-sm font-semibold transition bg-brand-500 text-slate-900";
+                btnTrack.className = "px-4 py-2 rounded-lg text-sm font-medium transition text-slate-400 hover:text-white hover:bg-slate-700";
+            } else {
+                tabProg.classList.add('hidden');
+                tabTrack.classList.remove('hidden');
+                btnTrack.className = "px-4 py-2 rounded-lg text-sm font-semibold transition bg-brand-500 text-slate-900";
+                btnProg.className = "px-4 py-2 rounded-lg text-sm font-medium transition text-slate-400 hover:text-white hover:bg-slate-700";
+                
+                renderAllTracker();
+            }
+        }
+
+        function handleExerciseChange() {
+            const ex = document.getElementById('input-exercise').value;
+            const label = document.getElementById('value-label');
+            if (ex === 'Full Front Lever') {
+                label.innerText = 'Hodnota (sekundy)';
+            } else {
+                label.innerText = 'Hodnota (opakování)';
+            }
+        }
+
+        document.getElementById('add-log-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const date = document.getElementById('input-date').value;
+            const exercise = document.getElementById('input-exercise').value;
+            const value = parseFloat(document.getElementById('input-value').value);
+
+            if (!date || !exercise || isNaN(value)) return;
+
+            const newLog = {
+                id: Date.now().toString(),
+                date,
+                exercise,
+                value
+            };
+
+            logs.push(newLog);
+            saveLogs();
+            renderAllTracker();
+
+            document.getElementById('input-value').value = '';
+        });
+
+        function deleteLog(id) {
+            logs = logs.filter(l => l.id !== id);
+            saveLogs();
+            renderAllTracker();
+        }
+
+        function renderPRs() {
+            const getMax = (ex) => {
+                const filtered = logs.filter(l => l.exercise === ex);
+                if (filtered.length === 0) return 0;
+                return Math.max(...filtered.map(l => l.value));
+            };
+
+            document.getElementById('pr-fl').innerText = getMax('Full Front Lever') + 's';
+            document.getElementById('pr-hspu-ground').innerText = getMax('HSPU (Zem)') + ' op.';
+            document.getElementById('pr-hspu-parallettes').innerText = getMax('HSPU (Bradla)') + ' op.';
+            document.getElementById('pr-tuck-pulls').innerText = getMax('Tuck FL Pull-ups') + ' op.';
+        }
+
+        function renderHistory() {
+            const tbody = document.getElementById('history-tbody');
+            tbody.innerHTML = '';
+
+            const sorted = [...logs].sort((a, b) => new Date(b.date) - new Date(a.date));
+            document.getElementById('logs-count').innerText = `${sorted.length} položek`;
+
+            if (sorted.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-500">Žádné zaznamenané tréninky.</td></tr>`;
+                return;
+            }
+
+            sorted.forEach(log => {
+                const unit = log.exercise === 'Full Front Lever' ? 's' : ' op.';
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-800/50 transition";
+                tr.innerHTML = `
+                    <td class="p-3 text-slate-300 font-mono text-xs">${log.date}</td>
+                    <td class="p-3 font-medium text-white">${log.exercise}</td>
+                    <td class="p-3 font-bold text-brand-500">${log.value}${unit}</td>
+                    <td class="p-3 text-right">
+                        <button onclick="deleteLog('${log.id}')" class="text-slate-500 hover:text-red-400 transition text-xs p-1">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updateChart() {
+            const chartCanvas = document.getElementById('progressChart');
+            if (!chartCanvas || typeof Chart === 'undefined') return;
+
+            const selectedExercise = document.getElementById('chart-filter').value;
+            const ctx = chartCanvas.getContext('2d');
+
+            const filtered = logs
+                .filter(l => l.exercise === selectedExercise)
+                .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            const labels = filtered.map(l => l.date);
+            const dataValues = filtered.map(l => l.value);
+
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            const unit = selectedExercise === 'Full Front Lever' ? 'sekund' : 'opakování';
+
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: `${selectedExercise} (${unit})`,
+                        data: dataValues,
+                        borderColor: '#14b8a6',
+                        backgroundColor: 'rgba(20, 184, 166, 0.15)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.3,
+                        pointBackgroundColor: '#14b8a6',
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#94a3b8', font: { family: 'sans-serif', size: 12 } }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(51, 65, 85, 0.4)' },
+                            ticks: { color: '#94a3b8' }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(51, 65, 85, 0.4)' },
+                            ticks: { color: '#94a3b8' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderAllTracker() {
+            renderPRs();
+            renderHistory();
+            updateChart();
+        }
+
+        // Spuštění po načtení DOM
+        document.addEventListener('DOMContentLoaded', () => {
+            renderAllTracker();
+        });
+    </script>
+</body>
+</html>
