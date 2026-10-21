@@ -108,3 +108,902 @@
                         <label class="block text-xs font-semibold text-slate-400 mb-1">Cvik</label>
                         <select id="input-exercise-select" onchange="handleExerciseSelectChange()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500">
                             <!-- Možnosti generovány z historie + volba Nový cvik -->
+                        </select>
+                    </div>
+                    <!-- Zobrazí se pokud uživatel zvolí '➕ Přidat nový cvik...' -->
+                    <div id="custom-exercise-div" class="hidden">
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Název Nového Cviku</label>
+                        <input type="text" id="input-custom-exercise" placeholder="např. Muscle-Up" class="w-full bg-slate-900 border border-brand-500 rounded-lg px-3 py-2 text-sm text-white focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Hodnota</label>
+                        <input type="number" step="0.5" id="input-value" required placeholder="např. 8" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Jednotka</label>
+                        <select id="input-unit" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500">
+                            <option value="s">sekundy (s)</option>
+                            <option value="op.">opakování (op.)</option>
+                            <option value="kg">kilogramy (kg)</option>
+                        </select>
+                    </div>
+                    <div class="sm:col-span-2 md:col-span-5 flex justify-end">
+                        <button type="submit" id="exercise-submit-btn" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-bold py-2.5 px-6 rounded-lg transition text-sm flex items-center">
+                            <i class="fa-solid fa-floppy-disk mr-2"></i> Uložit Výsledek
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Interaktivní Graf Progresu Cviků -->
+            <div class="bg-slate-800 rounded-xl p-5 border border-slate-700 space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <h3 class="text-lg font-bold text-white flex items-center">
+                        <i class="fa-solid fa-chart-line text-indigo-400 mr-2"></i> Graf Progresu Cviků
+                    </h3>
+                    <div class="flex items-center space-x-2">
+                        <label class="text-xs text-slate-400">Vybrat cvik:</label>
+                        <select id="chart-exercise-filter" onchange="updateExerciseChart()" class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-400">
+                            <!-- Generováno dynamicky podle dostupných cviků -->
+                        </select>
+                    </div>
+                </div>
+                <div class="h-64 relative">
+                    <canvas id="exerciseChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Historie Výkonů -->
+            <div class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden">
+                <div class="p-4 border-b border-slate-700 flex justify-between items-center">
+                    <h3 class="text-lg font-bold text-white">Historie Cviků</h3>
+                    <span class="text-xs text-slate-400" id="logs-count">0 položek</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-300">
+                        <thead class="bg-slate-900/50 text-slate-400 text-xs uppercase border-b border-slate-700">
+                            <tr>
+                                <th class="p-3">Datum</th>
+                                <th class="p-3">Cvik</th>
+                                <th class="p-3">Výkon</th>
+                                <th class="p-3 text-right">Akce</th>
+                            </tr>
+                        </thead>
+                        <tbody id="exercise-history-tbody" class="divide-y divide-slate-700/50"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= Záložka 3: VÝŽIVA & MAKRA ================= -->
+        <section id="tab-nutrition" class="space-y-6 hidden">
+
+            <!-- Formulář pro Přidání / Úpravu Nutričního Záznamu -->
+            <div class="bg-slate-800 rounded-xl p-5 border border-slate-700" id="nutrition-form-card">
+                <h3 class="text-lg font-bold text-white mb-4 flex items-center" id="nutrition-form-title">
+                    <i class="fa-solid fa-utensils text-emerald-400 mr-2"></i> Zapsat Deníček Výživy
+                </h3>
+                <form id="add-nutrition-form" class="grid sm:grid-cols-2 md:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Datum</label>
+                        <input type="date" id="nutri-date" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Kalorie (kcal)</label>
+                        <input type="number" id="nutri-calories" required placeholder="např. 2800" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Sacharidy (g)</label>
+                        <input type="number" id="nutri-carbs" required placeholder="např. 350" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Bílkoviny (g)</label>
+                        <input type="number" id="nutri-protein" required placeholder="např. 160" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div class="sm:col-span-2 md:col-span-4 flex justify-end">
+                        <button type="submit" id="nutrition-submit-btn" class="bg-emerald-500 hover:bg-emerald-600 text-slate-900 font-bold py-2.5 px-6 rounded-lg transition text-sm flex items-center">
+                            <i class="fa-solid fa-plus mr-2"></i> Uložit Makra
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Interaktivní Graf Výživy s přepínáním -->
+            <div class="bg-slate-800 rounded-xl p-5 border border-slate-700 space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <h3 class="text-lg font-bold text-white flex items-center">
+                        <i class="fa-solid fa-chart-area text-amber-400 mr-2"></i> Graf Výživy & Makroživin
+                    </h3>
+                    <!-- Tlačítka pro přepínání makroživin v grafu -->
+                    <div class="flex items-center bg-slate-900 p-1 rounded-lg border border-slate-700 text-xs font-semibold">
+                        <button onclick="setNutritionMetric('calories')" id="nutri-btn-calories" class="px-3 py-1.5 rounded-md bg-amber-500 text-slate-900 transition font-bold">Kalorie (kcal)</button>
+                        <button onclick="setNutritionMetric('carbs')" id="nutri-btn-carbs" class="px-3 py-1.5 rounded-md text-slate-400 hover:text-white transition">Sacharidy (g)</button>
+                        <button onclick="setNutritionMetric('protein')" id="nutri-btn-protein" class="px-3 py-1.5 rounded-md text-slate-400 hover:text-white transition">Bílkoviny (g)</button>
+                    </div>
+                </div>
+                <div class="h-64 relative">
+                    <canvas id="nutritionChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Historie Výživy -->
+            <div class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden">
+                <div class="p-4 border-b border-slate-700 flex justify-between items-center">
+                    <h3 class="text-lg font-bold text-white">Historie Záznamů Stravy</h3>
+                    <span class="text-xs text-slate-400" id="nutri-logs-count">0 dnů</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-300">
+                        <thead class="bg-slate-900/50 text-slate-400 text-xs uppercase border-b border-slate-700">
+                            <tr>
+                                <th class="p-3">Datum</th>
+                                <th class="p-3">Kalorie</th>
+                                <th class="p-3">Sacharidy</th>
+                                <th class="p-3">Bílkoviny</th>
+                                <th class="p-3 text-right">Akce</th>
+                            </tr>
+                        </thead>
+                        <tbody id="nutrition-history-tbody" class="divide-y divide-slate-700/50"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- JS Skripty -->
+    <script>
+        // --- 1. DATOVÁ STRUKTURA TRÉNINKOVÉHO PLÁNU ---
+        const defaultProgram = [
+            {
+                id: 'w1',
+                title: 'TÝDEN 1: Akumulace objemu',
+                days: [
+                    {
+                        id: 'd1',
+                        name: 'Pondělí / Čtvrtek - Tah (FL Fokus)',
+                        exercises: [
+                            { id: 'e1', name: 'Banded Full Front Lever Hold', target: '4x 15-20s' },
+                            { id: 'e2', name: 'Full FL Negative Excentriky', target: '3x 3 op.' },
+                            { id: 'e3', name: 'Tuck FL Pull-ups', target: '4x 4-6 op.' }
+                        ]
+                    },
+                    {
+                        id: 'd2',
+                        name: 'Úterý / Pátek - Tlak (HSPU Fokus)',
+                        exercises: [
+                            { id: 'e4', name: 'Handstand Push-Ups (Zem)', target: '4x 3-5 op.' },
+                            { id: 'e5', name: 'HSPU na Bradlech', target: '3x 4 op.' },
+                            { id: 'e6', name: 'Press to Handstand negativy', target: '3x 3 op.' }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'w2',
+                title: 'TÝDEN 2: Intenzita & Max Holdy',
+                days: [
+                    {
+                        id: 'd3',
+                        name: 'Pondělí / Čtvrtek - Tah (Max FL)',
+                        exercises: [
+                            { id: 'e7', name: 'Unassisted Full FL Max Hold', target: '3x MAX (6-8s)' },
+                            { id: 'e8', name: 'Banded FL Holds (Slabá guma)', target: '3x 10s' }
+                        ]
+                    },
+                    {
+                        id: 'd4',
+                        name: 'Sobota - PR Test Day',
+                        exercises: [
+                            { id: 'e9', name: 'Full Front Lever Max Duration', target: 'TEST PR ⏱️' },
+                            { id: 'e10', name: 'HSPU Zem Max Reps', target: 'TEST PR ⏱️' }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        let programData = JSON.parse(localStorage.getItem('calisthenics_program_v3')) || defaultProgram;
+        let isProgramEditMode = false;
+
+        const defaultExerciseLogs = [
+            { id: '1', date: '2026-09-15', exercise: 'Full Front Lever', value: 3.5, unit: 's' },
+            { id: '2', date: '2026-09-22', exercise: 'Full Front Lever', value: 4.0, unit: 's' },
+            { id: '3', date: '2026-10-01', exercise: 'Full Front Lever', value: 5.0, unit: 's' },
+            { id: '4', date: '2026-10-05', exercise: 'HSPU (Zem)', value: 4, unit: 'op.' },
+            { id: '5', date: '2026-10-12', exercise: 'HSPU (Zem)', value: 5, unit: 'op.' },
+            { id: '6', date: '2026-10-06', exercise: 'HSPU (Bradla)', value: 3, unit: 'op.' },
+            { id: '7', date: '2026-10-14', exercise: 'HSPU (Bradla)', value: 5, unit: 'op.' }
+        ];
+
+        let exerciseLogs = JSON.parse(localStorage.getItem('calisthenics_exercise_logs_v3')) || defaultExerciseLogs;
+        let editingExerciseLogId = null;
+
+        const defaultNutritionLogs = [
+            { id: 'n1', date: '2026-10-15', calories: 2750, carbs: 320, protein: 155 },
+            { id: 'n2', date: '2026-10-16', calories: 2850, carbs: 340, protein: 160 },
+            { id: 'n3', date: '2026-10-17', calories: 2900, carbs: 360, protein: 165 },
+            { id: 'n4', date: '2026-10-18', calories: 2800, carbs: 330, protein: 158 }
+        ];
+
+        let nutritionLogs = JSON.parse(localStorage.getItem('calisthenics_nutrition_logs_v3')) || defaultNutritionLogs;
+        let editingNutritionLogId = null;
+
+        let exerciseChartInstance = null;
+        let nutritionChartInstance = null;
+        let currentNutritionMetric = 'calories';
+
+        try {
+            document.getElementById('input-date').valueAsDate = new Date();
+            document.getElementById('nutri-date').valueAsDate = new Date();
+        } catch(e) {}
+
+
+        // --- LOGIKA TRÉNINKOVÉHO PLÁNU ---
+        function saveProgram() {
+            localStorage.setItem('calisthenics_program_v3', JSON.stringify(programData));
+        }
+
+        function toggleProgramEditMode() {
+            isProgramEditMode = !isProgramEditMode;
+            const btn = document.getElementById('edit-program-btn');
+            const addWeekBtn = document.getElementById('add-week-container');
+
+            if (isProgramEditMode) {
+                btn.innerHTML = `<i class="fa-solid fa-check mr-2"></i> Uložit Změny Plánu`;
+                btn.className = "bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-lg text-sm transition flex items-center";
+                addWeekBtn.classList.remove('hidden');
+            } else {
+                readInputsIntoProgramData();
+                saveProgram();
+                btn.innerHTML = `<i class="fa-solid fa-pen-to-square mr-2"></i> Upravit Plán`;
+                btn.className = "bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2 rounded-lg text-sm transition flex items-center";
+                addWeekBtn.classList.add('hidden');
+            }
+            renderProgram();
+        }
+
+        function readInputsIntoProgramData() {
+            programData.forEach(week => {
+                const weekTitleInput = document.getElementById(`week-title-${week.id}`);
+                if (weekTitleInput) week.title = weekTitleInput.value;
+
+                week.days.forEach(day => {
+                    const dayNameInput = document.getElementById(`day-name-${day.id}`);
+                    if (dayNameInput) day.name = dayNameInput.value;
+
+                    day.exercises.forEach(ex => {
+                        const exNameInput = document.getElementById(`ex-name-${ex.id}`);
+                        const exTargetInput = document.getElementById(`ex-target-${ex.id}`);
+                        if (exNameInput) ex.name = exNameInput.value;
+                        if (exTargetInput) ex.target = exTargetInput.value;
+                    });
+                });
+            });
+        }
+
+        function renderProgram() {
+            const container = document.getElementById('program-container');
+            container.innerHTML = '';
+
+            programData.forEach(week => {
+                const weekDiv = document.createElement('div');
+                weekDiv.className = "space-y-4 bg-slate-800/50 p-5 rounded-2xl border border-slate-700/80";
+
+                let weekHeaderHtml = '';
+                if (isProgramEditMode) {
+                    weekHeaderHtml = `
+                        <div class="flex items-center justify-between gap-3 mb-2">
+                            <input type="text" id="week-title-${week.id}" value="${week.title}" class="bg-slate-900 border border-slate-600 rounded px-3 py-1.5 font-bold text-white w-full text-base">
+                            <button onclick="deleteWeek('${week.id}')" class="text-red-400 hover:text-red-300 text-xs px-2 py-1"><i class="fa-solid fa-trash"></i> Smazat Blok</button>
+                        </div>
+                    `;
+                } else {
+                    weekHeaderHtml = `
+                        <h3 class="text-lg font-bold text-slate-200 flex items-center">
+                            <i class="fa-solid fa-layer-group text-brand-500 mr-2"></i> ${week.title}
+                        </h3>
+                    `;
+                }
+
+                let daysHtml = '<div class="grid md:grid-cols-2 gap-4">';
+                week.days.forEach(day => {
+                    daysHtml += `
+                        <div class="bg-slate-800 rounded-xl p-4 border border-slate-700/80">
+                            <div class="flex justify-between items-center mb-3">
+                                ${isProgramEditMode ? 
+                                    `<input type="text" id="day-name-${day.id}" value="${day.name}" class="bg-slate-900 border border-slate-600 rounded px-2 py-1 text-xs font-bold text-brand-500 w-full mr-2">
+                                     <button onclick="deleteDay('${week.id}', '${day.id}')" class="text-red-400 hover:text-red-300 text-xs"><i class="fa-solid fa-xmark"></i></button>` :
+                                    `<span class="font-bold text-brand-500 text-sm">${day.name}</span>`
+                                }
+                            </div>
+                            <ul class="space-y-2 text-sm text-slate-300">
+                    `;
+
+                    day.exercises.forEach(ex => {
+                        daysHtml += `
+                            <li class="flex justify-between items-center border-b border-slate-700/50 pb-1.5 gap-2">
+                                ${isProgramEditMode ? `
+                                    <input type="text" id="ex-name-${ex.id}" value="${ex.name}" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs w-2/3 text-white">
+                                    <input type="text" id="ex-target-${ex.id}" value="${ex.target}" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs w-1/3 text-amber-400 font-semibold">
+                                    <button onclick="deleteExercise('${week.id}', '${day.id}', '${ex.id}')" class="text-slate-500 hover:text-red-400 text-xs"><i class="fa-solid fa-trash"></i></button>
+                                ` : `
+                                    <span>${ex.name}</span>
+                                    <span class="font-semibold text-slate-100">${ex.target}</span>
+                                `}
+                            </li>
+                        `;
+                    });
+
+                    daysHtml += `</ul>`;
+
+                    if (isProgramEditMode) {
+                        daysHtml += `
+                            <button onclick="addExercise('${week.id}', '${day.id}')" class="mt-3 text-xs text-brand-500 hover:text-brand-400 font-semibold flex items-center">
+                                <i class="fa-solid fa-plus mr-1"></i> Přidat Cvik
+                            </button>
+                        `;
+                    }
+
+                    daysHtml += `</div>`;
+                });
+
+                if (isProgramEditMode) {
+                    daysHtml += `
+                        <div class="bg-slate-900/40 rounded-xl p-4 border border-dashed border-slate-700 flex items-center justify-center">
+                            <button onclick="addDay('${week.id}')" class="text-xs font-semibold text-slate-400 hover:text-white">
+                                <i class="fa-solid fa-plus mr-1 text-brand-500"></i> Přidat Den do tohoto Bloku
+                            </button>
+                        </div>
+                    `;
+                }
+
+                daysHtml += `</div>`;
+
+                weekDiv.innerHTML = weekHeaderHtml + daysHtml;
+                container.appendChild(weekDiv);
+            });
+        }
+
+        function addWeek() {
+            readInputsIntoProgramData();
+            programData.push({ id: 'w_' + Date.now(), title: 'NOVÝ TRÉNINKOVÝ BLOK', days: [] });
+            renderProgram();
+        }
+
+        function deleteWeek(weekId) {
+            readInputsIntoProgramData();
+            programData = programData.filter(w => w.id !== weekId);
+            renderProgram();
+        }
+
+        function addDay(weekId) {
+            readInputsIntoProgramData();
+            const week = programData.find(w => w.id === weekId);
+            if (week) {
+                week.days.push({ id: 'd_' + Date.now(), name: 'Nový Den', exercises: [] });
+            }
+            renderProgram();
+        }
+
+        function deleteDay(weekId, dayId) {
+            readInputsIntoProgramData();
+            const week = programData.find(w => w.id === weekId);
+            if (week) {
+                week.days = week.days.filter(d => d.id !== dayId);
+            }
+            renderProgram();
+        }
+
+        function addExercise(weekId, dayId) {
+            readInputsIntoProgramData();
+            const week = programData.find(w => w.id === weekId);
+            if (week) {
+                const day = week.days.find(d => d.id === dayId);
+                if (day) {
+                    day.exercises.push({ id: 'e_' + Date.now(), name: 'Nový Cvik', target: '3x 8-10' });
+                }
+            }
+            renderProgram();
+        }
+
+        function deleteExercise(weekId, dayId, exId) {
+            readInputsIntoProgramData();
+            const week = programData.find(w => w.id === weekId);
+            if (week) {
+                const day = week.days.find(d => d.id === dayId);
+                if (day) {
+                    day.exercises = day.exercises.filter(e => e.id !== exId);
+                }
+            }
+            renderProgram();
+        }
+
+
+        // --- LOGIKA ZÁZNAMNÍKU CVIKŮ ---
+        function saveExerciseLogs() {
+            localStorage.setItem('calisthenics_exercise_logs_v3', JSON.stringify(exerciseLogs));
+        }
+
+        function getAllUniqueExercises() {
+            const set = new Set(exerciseLogs.map(l => l.exercise));
+            if (set.size === 0) {
+                set.add('Full Front Lever');
+                set.add('HSPU (Zem)');
+            }
+            return Array.from(set);
+        }
+
+        function renderExerciseSelectOptions() {
+            const select = document.getElementById('input-exercise-select');
+            const chartFilter = document.getElementById('chart-exercise-filter');
+
+            const unique = getAllUniqueExercises();
+
+            let optionsHtml = '';
+            unique.forEach(ex => {
+                optionsHtml += `<option value="${ex}">${ex}</option>`;
+            });
+            optionsHtml += `<option value="ADD_NEW_CUSTOM">➕ Přidat nový cvik...</option>`;
+
+            select.innerHTML = optionsHtml;
+
+            let chartOptionsHtml = '';
+            unique.forEach(ex => {
+                chartOptionsHtml += `<option value="${ex}">${ex}</option>`;
+            });
+            chartFilter.innerHTML = chartOptionsHtml;
+        }
+
+        function handleExerciseSelectChange() {
+            const val = document.getElementById('input-exercise-select').value;
+            const customDiv = document.getElementById('custom-exercise-div');
+            if (val === 'ADD_NEW_CUSTOM') {
+                customDiv.classList.remove('hidden');
+            } else {
+                customDiv.classList.add('hidden');
+            }
+        }
+
+        // ÚPRAVA (TUŽTIČKA) CVIKU
+        function editExerciseLog(id) {
+            const log = exerciseLogs.find(l => l.id === id);
+            if (!log) return;
+
+            editingExerciseLogId = id;
+
+            document.getElementById('input-date').value = log.date;
+            
+            const select = document.getElementById('input-exercise-select');
+            const customDiv = document.getElementById('custom-exercise-div');
+            const customInput = document.getElementById('input-custom-exercise');
+
+            const exists = Array.from(select.options).some(opt => opt.value === log.exercise);
+            if (exists) {
+                select.value = log.exercise;
+                customDiv.classList.add('hidden');
+            } else {
+                select.value = 'ADD_NEW_CUSTOM';
+                customDiv.classList.remove('hidden');
+                customInput.value = log.exercise;
+            }
+
+            document.getElementById('input-value').value = log.value;
+            document.getElementById('input-unit').value = log.unit || 'op.';
+
+            const submitBtn = document.getElementById('exercise-submit-btn');
+            submitBtn.innerHTML = `<i class="fa-solid fa-check mr-2"></i> Aktualizovat Cvik`;
+            submitBtn.className = "bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold py-2.5 px-6 rounded-lg transition text-sm flex items-center";
+
+            document.getElementById('exercise-form-card').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        document.getElementById('add-log-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const date = document.getElementById('input-date').value;
+            const selectVal = document.getElementById('input-exercise-select').value;
+            const customVal = document.getElementById('input-custom-exercise').value.trim();
+            const value = parseFloat(document.getElementById('input-value').value);
+            const unit = document.getElementById('input-unit').value;
+
+            let exerciseName = selectVal;
+            if (selectVal === 'ADD_NEW_CUSTOM') {
+                if (!customVal) return;
+                exerciseName = customVal;
+            }
+
+            if (!date || !exerciseName || isNaN(value)) return;
+
+            if (editingExerciseLogId) {
+                // Úprava existujícího záznamu
+                const idx = exerciseLogs.findIndex(l => l.id === editingExerciseLogId);
+                if (idx !== -1) {
+                    exerciseLogs[idx] = { id: editingExerciseLogId, date, exercise: exerciseName, value, unit };
+                }
+                editingExerciseLogId = null;
+
+                const submitBtn = document.getElementById('exercise-submit-btn');
+                submitBtn.innerHTML = `<i class="fa-solid fa-floppy-disk mr-2"></i> Uložit Výsledek`;
+                submitBtn.className = "bg-brand-500 hover:bg-brand-600 text-slate-900 font-bold py-2.5 px-6 rounded-lg transition text-sm flex items-center";
+            } else {
+                // Nový záznam
+                const newLog = { id: Date.now().toString(), date, exercise: exerciseName, value, unit };
+                exerciseLogs.push(newLog);
+            }
+
+            saveExerciseLogs();
+
+            document.getElementById('input-custom-exercise').value = '';
+            document.getElementById('input-value').value = '';
+            document.getElementById('custom-exercise-div').classList.add('hidden');
+
+            renderTrackerSection();
+        });
+
+        function deleteExerciseLog(id) {
+            exerciseLogs = exerciseLogs.filter(l => l.id !== id);
+            saveExerciseLogs();
+            renderTrackerSection();
+        }
+
+        function renderPRCards() {
+            const container = document.getElementById('prs-container');
+            container.innerHTML = '';
+
+            const exercises = getAllUniqueExercises();
+            exercises.forEach(ex => {
+                const logs = exerciseLogs.filter(l => l.exercise === ex);
+                if (logs.length === 0) return;
+
+                const maxVal = Math.max(...logs.map(l => l.value));
+                const unit = logs[0]?.unit || '';
+
+                const card = document.createElement('div');
+                card.className = "bg-slate-800 p-3.5 rounded-xl border border-slate-700 relative";
+                card.innerHTML = `
+                    <div class="text-xs text-slate-400 font-medium truncate">${ex}</div>
+                    <div class="text-xl font-black text-brand-500 mt-1">${maxVal} ${unit}</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function renderExerciseHistoryTable() {
+            const tbody = document.getElementById('exercise-history-tbody');
+            tbody.innerHTML = '';
+
+            const sorted = [...exerciseLogs].sort((a, b) => new Date(b.date) - new Date(a.date));
+            document.getElementById('logs-count').innerText = `${sorted.length} položek`;
+
+            if (sorted.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-500">Žádné zaznamenané výkony.</td></tr>`;
+                return;
+            }
+
+            sorted.forEach(log => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-800/50 transition";
+                tr.innerHTML = `
+                    <td class="p-3 text-slate-300 font-mono text-xs">${log.date}</td>
+                    <td class="p-3 font-medium text-white">${log.exercise}</td>
+                    <td class="p-3 font-bold text-brand-500">${log.value} ${log.unit || ''}</td>
+                    <td class="p-3 text-right">
+                        <button onclick="editExerciseLog('${log.id}')" class="text-slate-400 hover:text-amber-400 transition text-xs p-1 mr-1" title="Upravit">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                        <button onclick="deleteExerciseLog('${log.id}')" class="text-slate-500 hover:text-red-400 transition text-xs p-1" title="Smazat">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updateExerciseChart() {
+            const chartCanvas = document.getElementById('exerciseChart');
+            if (!chartCanvas || typeof Chart === 'undefined') return;
+
+            const selectedExercise = document.getElementById('chart-exercise-filter').value;
+            if (!selectedExercise) return;
+
+            const ctx = chartCanvas.getContext('2d');
+            const filtered = exerciseLogs
+                .filter(l => l.exercise === selectedExercise)
+                .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            const labels = filtered.map(l => l.date);
+            const dataValues = filtered.map(l => l.value);
+            const unit = filtered[0]?.unit || '';
+
+            if (exerciseChartInstance) {
+                exerciseChartInstance.destroy();
+            }
+
+            exerciseChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: `${selectedExercise} (${unit})`,
+                        data: dataValues,
+                        borderColor: '#14b8a6',
+                        backgroundColor: 'rgba(20, 184, 166, 0.15)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.3,
+                        pointBackgroundColor: '#14b8a6',
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#94a3b8' } } },
+                    scales: {
+                        x: { grid: { color: 'rgba(51, 65, 85, 0.4)' }, ticks: { color: '#94a3b8' } },
+                        y: { beginAtZero: true, grid: { color: 'rgba(51, 65, 85, 0.4)' }, ticks: { color: '#94a3b8' } }
+                    }
+                }
+            });
+        }
+
+        function renderTrackerSection() {
+            renderExerciseSelectOptions();
+            renderPRCards();
+            renderExerciseHistoryTable();
+            updateExerciseChart();
+        }
+
+
+        // --- LOGIKA VÝŽIVY & MAKROŽIVIN ---
+        function saveNutritionLogs() {
+            localStorage.setItem('calisthenics_nutrition_logs_v3', JSON.stringify(nutritionLogs));
+        }
+
+        // ÚPRAVA (TUŽTIČKA) VÝŽIVY
+        function editNutritionLog(id) {
+            const log = nutritionLogs.find(l => l.id === id);
+            if (!log) return;
+
+            editingNutritionLogId = id;
+
+            document.getElementById('nutri-date').value = log.date;
+            document.getElementById('nutri-calories').value = log.calories;
+            document.getElementById('nutri-carbs').value = log.carbs;
+            document.getElementById('nutri-protein').value = log.protein;
+
+            const submitBtn = document.getElementById('nutrition-submit-btn');
+            submitBtn.innerHTML = `<i class="fa-solid fa-check mr-2"></i> Aktualizovat Makra`;
+            submitBtn.className = "bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold py-2.5 px-6 rounded-lg transition text-sm flex items-center";
+
+            document.getElementById('nutrition-form-card').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        document.getElementById('add-nutrition-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const date = document.getElementById('nutri-date').value;
+            const calories = parseInt(document.getElementById('nutri-calories').value);
+            const carbs = parseInt(document.getElementById('nutri-carbs').value);
+            const protein = parseInt(document.getElementById('nutri-protein').value);
+
+            if (!date || isNaN(calories) || isNaN(carbs) || isNaN(protein)) return;
+
+            if (editingNutritionLogId) {
+                // Úprava označeného řádku
+                const idx = nutritionLogs.findIndex(l => l.id === editingNutritionLogId);
+                if (idx !== -1) {
+                    nutritionLogs[idx] = { id: editingNutritionLogId, date, calories, carbs, protein };
+                }
+                editingNutritionLogId = null;
+
+                const submitBtn = document.getElementById('nutrition-submit-btn');
+                submitBtn.innerHTML = `<i class="fa-solid fa-plus mr-2"></i> Uložit Makra`;
+                submitBtn.className = "bg-emerald-500 hover:bg-emerald-600 text-slate-900 font-bold py-2.5 px-6 rounded-lg transition text-sm flex items-center";
+            } else {
+                // Přičtení/vložení nového
+                const existingIdx = nutritionLogs.findIndex(l => l.date === date);
+                if (existingIdx !== -1) {
+                    nutritionLogs[existingIdx] = { id: nutritionLogs[existingIdx].id, date, calories, carbs, protein };
+                } else {
+                    nutritionLogs.push({ id: Date.now().toString(), date, calories, carbs, protein });
+                }
+            }
+
+            saveNutritionLogs();
+
+            document.getElementById('nutri-calories').value = '';
+            document.getElementById('nutri-carbs').value = '';
+            document.getElementById('nutri-protein').value = '';
+
+            renderNutritionSection();
+        });
+
+        function deleteNutritionLog(id) {
+            nutritionLogs = nutritionLogs.filter(l => l.id !== id);
+            saveNutritionLogs();
+            renderNutritionSection();
+        }
+
+        function setNutritionMetric(metric) {
+            currentNutritionMetric = metric;
+
+            const btnCal = document.getElementById('nutri-btn-calories');
+            const btnCarbs = document.getElementById('nutri-btn-carbs');
+            const btnProt = document.getElementById('nutri-btn-protein');
+
+            btnCal.className = metric === 'calories' ? "px-3 py-1.5 rounded-md bg-amber-500 text-slate-900 transition font-bold" : "px-3 py-1.5 rounded-md text-slate-400 hover:text-white transition";
+            btnCarbs.className = metric === 'carbs' ? "px-3 py-1.5 rounded-md bg-cyan-500 text-slate-900 transition font-bold" : "px-3 py-1.5 rounded-md text-slate-400 hover:text-white transition";
+            btnProt.className = metric === 'protein' ? "px-3 py-1.5 rounded-md bg-purple-500 text-slate-900 transition font-bold" : "px-3 py-1.5 rounded-md text-slate-400 hover:text-white transition";
+
+            updateNutritionChart();
+        }
+
+        function updateNutritionChart() {
+            const chartCanvas = document.getElementById('nutritionChart');
+            if (!chartCanvas || typeof Chart === 'undefined') return;
+
+            const ctx = chartCanvas.getContext('2d');
+            const sorted = [...nutritionLogs].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            const labels = sorted.map(l => l.date);
+
+            let dataValues = [];
+            let labelTitle = '';
+            let colorHex = '#f59e0b';
+            let bgHex = 'rgba(245, 158, 11, 0.15)';
+
+            if (currentNutritionMetric === 'calories') {
+                dataValues = sorted.map(l => l.calories);
+                labelTitle = 'Kalorie (kcal)';
+                colorHex = '#f59e0b';
+                bgHex = 'rgba(245, 158, 11, 0.15)';
+            } else if (currentNutritionMetric === 'carbs') {
+                dataValues = sorted.map(l => l.carbs);
+                labelTitle = 'Sacharidy (g)';
+                colorHex = '#06b6d4';
+                bgHex = 'rgba(6, 182, 212, 0.15)';
+            } else if (currentNutritionMetric === 'protein') {
+                dataValues = sorted.map(l => l.protein);
+                labelTitle = 'Bílkoviny (g)';
+                colorHex = '#a855f7';
+                bgHex = 'rgba(168, 85, 247, 0.15)';
+            }
+
+            if (nutritionChartInstance) {
+                nutritionChartInstance.destroy();
+            }
+
+            nutritionChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: labelTitle,
+                        data: dataValues,
+                        borderColor: colorHex,
+                        backgroundColor: bgHex,
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.3,
+                        pointBackgroundColor: colorHex,
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#94a3b8' } } },
+                    scales: {
+                        x: { grid: { color: 'rgba(51, 65, 85, 0.4)' }, ticks: { color: '#94a3b8' } },
+                        y: { beginAtZero: false, grid: { color: 'rgba(51, 65, 85, 0.4)' }, ticks: { color: '#94a3b8' } }
+                    }
+                }
+            });
+        }
+
+        function renderNutritionTable() {
+            const tbody = document.getElementById('nutrition-history-tbody');
+            tbody.innerHTML = '';
+
+            const sorted = [...nutritionLogs].sort((a, b) => new Date(b.date) - new Date(a.date));
+            document.getElementById('nutri-logs-count').innerText = `${sorted.length} dnů`;
+
+            if (sorted.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">Žádné záznamy stravy.</td></tr>`;
+                return;
+            }
+
+            sorted.forEach(log => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-800/50 transition";
+                tr.innerHTML = `
+                    <td class="p-3 text-slate-300 font-mono text-xs">${log.date}</td>
+                    <td class="p-3 font-bold text-amber-400">${log.calories} kcal</td>
+                    <td class="p-3 font-semibold text-cyan-400">${log.carbs} g</td>
+                    <td class="p-3 font-semibold text-purple-400">${log.protein} g</td>
+                    <td class="p-3 text-right">
+                        <button onclick="editNutritionLog('${log.id}')" class="text-slate-400 hover:text-amber-400 transition text-xs p-1 mr-1" title="Upravit">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                        <button onclick="deleteNutritionLog('${log.id}')" class="text-slate-500 hover:text-red-400 transition text-xs p-1" title="Smazat">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderNutritionSection() {
+            renderNutritionTable();
+            updateNutritionChart();
+        }
+
+
+        // --- PREPÍNANÍ ZÁLOŽEK ---
+        function switchTab(tab) {
+            const btnProg = document.getElementById('tab-btn-program');
+            const btnTrack = document.getElementById('tab-btn-tracker');
+            const btnNutri = document.getElementById('tab-btn-nutrition');
+
+            const tabProg = document.getElementById('tab-program');
+            const tabTrack = document.getElementById('tab-tracker');
+            const tabNutri = document.getElementById('tab-nutrition');
+
+            [btnProg, btnTrack, btnNutri].forEach(btn => {
+                btn.className = "px-3 py-2 rounded-lg font-medium transition text-slate-400 hover:text-white hover:bg-slate-700";
+            });
+            [tabProg, tabTrack, tabNutri].forEach(t => t.classList.add('hidden'));
+
+            if (tab === 'program') {
+                tabProg.classList.remove('hidden');
+                btnProg.className = "px-3 py-2 rounded-lg font-semibold transition bg-brand-500 text-slate-900";
+                renderProgram();
+            } else if (tab === 'tracker') {
+                tabTrack.classList.remove('hidden');
+                btnTrack.className = "px-3 py-2 rounded-lg font-semibold transition bg-brand-500 text-slate-900";
+                renderTrackerSection();
+            } else if (tab === 'nutrition') {
+                tabNutri.classList.remove('hidden');
+                btnNutri.className = "px-3 py-2 rounded-lg font-semibold transition bg-brand-500 text-slate-900";
+                renderNutritionSection();
+            }
+        }
+
+        // INITIALIZACE & MAGIC LINK CONTROLLER
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProgram();
+
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('addNutri') === '1') {
+                const cal = parseInt(urlParams.get('cal'));
+                const carbs = parseInt(urlParams.get('carbs'));
+                const prot = parseInt(urlParams.get('prot'));
+                
+                if (!isNaN(cal) && !isNaN(carbs) && !isNaN(prot)) {
+                    const today = new Date().toISOString().split('T')[0];
+                    const existingIdx = nutritionLogs.findIndex(l => l.date === today);
+                    if (existingIdx !== -1) {
+                        nutritionLogs[existingIdx].calories += cal;
+                        nutritionLogs[existingIdx].carbs += carbs;
+                        nutritionLogs[existingIdx].protein += prot;
+                    } else {
+                        nutritionLogs.push({ 
+                            id: Date.now().toString(), 
+                            date: today, 
+                            calories: cal, 
+                            carbs: carbs, 
+                            protein: prot 
+                        });
+                    }
+                    saveNutritionLogs();
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    switchTab('nutrition');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
