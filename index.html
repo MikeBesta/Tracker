@@ -99,7 +99,7 @@
                 <h3 class="text-lg font-bold text-white mb-4 flex items-center" id="exercise-form-title">
                     <i class="fa-solid fa-plus-circle text-brand-500 mr-2"></i> Zapsat Výkon Cviku
                 </h3>
-                <form id="add-log-form" class="grid sm:grid-cols-2 md:grid-cols-5 gap-4">
+                <form id="add-log-form" class="grid sm:grid-cols-2 md:grid-cols-6 gap-4">
                     <div>
                         <label class="block text-xs font-semibold text-slate-400 mb-1">Datum</label>
                         <input type="date" id="input-date" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500">
@@ -116,18 +116,22 @@
                         <input type="text" id="input-custom-exercise" placeholder="např. Muscle-Up" class="w-full bg-slate-900 border border-brand-500 rounded-lg px-3 py-2 text-sm text-white focus:outline-none">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-400 mb-1">Hodnota</label>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Série</label>
+                        <input type="number" id="input-sets" min="1" value="4" required placeholder="např. 4" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Hodnota / Opakování</label>
                         <input type="number" step="0.5" id="input-value" required placeholder="např. 8" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-400 mb-1">Jednotka</label>
                         <select id="input-unit" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500">
-                            <option value="s">sekundy (s)</option>
                             <option value="op.">opakování (op.)</option>
+                            <option value="s">sekundy (s)</option>
                             <option value="kg">kilogramy (kg)</option>
                         </select>
                     </div>
-                    <div class="sm:col-span-2 md:col-span-5 flex justify-end">
+                    <div class="sm:col-span-2 md:col-span-6 flex justify-end">
                         <button type="submit" id="exercise-submit-btn" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-bold py-2.5 px-6 rounded-lg transition text-sm flex items-center">
                             <i class="fa-solid fa-floppy-disk mr-2"></i> Uložit Výsledek
                         </button>
@@ -165,7 +169,7 @@
                             <tr>
                                 <th class="p-3">Datum</th>
                                 <th class="p-3">Cvik</th>
-                                <th class="p-3">Výkon</th>
+                                <th class="p-3">Série & Výkon</th>
                                 <th class="p-3 text-right">Akce</th>
                             </tr>
                         </thead>
@@ -308,13 +312,13 @@
         let isProgramEditMode = false;
 
         const defaultExerciseLogs = [
-            { id: '1', date: '2026-09-15', exercise: 'Full Front Lever', value: 3.5, unit: 's' },
-            { id: '2', date: '2026-09-22', exercise: 'Full Front Lever', value: 4.0, unit: 's' },
-            { id: '3', date: '2026-10-01', exercise: 'Full Front Lever', value: 5.0, unit: 's' },
-            { id: '4', date: '2026-10-05', exercise: 'HSPU (Zem)', value: 4, unit: 'op.' },
-            { id: '5', date: '2026-10-12', exercise: 'HSPU (Zem)', value: 5, unit: 'op.' },
-            { id: '6', date: '2026-10-06', exercise: 'HSPU (Bradla)', value: 3, unit: 'op.' },
-            { id: '7', date: '2026-10-14', exercise: 'HSPU (Bradla)', value: 5, unit: 'op.' }
+            { id: '1', date: '2026-09-15', exercise: 'Full Front Lever', sets: 3, value: 3.5, unit: 's' },
+            { id: '2', date: '2026-09-22', exercise: 'Full Front Lever', sets: 4, value: 4.0, unit: 's' },
+            { id: '3', date: '2026-10-01', exercise: 'Full Front Lever', sets: 4, value: 5.0, unit: 's' },
+            { id: '4', date: '2026-10-05', exercise: 'HSPU (Zem)', sets: 4, value: 4, unit: 'op.' },
+            { id: '5', date: '2026-10-12', exercise: 'HSPU (Zem)', sets: 4, value: 5, unit: 'op.' },
+            { id: '6', date: '2026-10-06', exercise: 'HSPU (Bradla)', sets: 3, value: 3, unit: 'op.' },
+            { id: '7', date: '2026-10-14', exercise: 'HSPU (Bradla)', sets: 3, value: 5, unit: 'op.' }
         ];
 
         let exerciseLogs = JSON.parse(localStorage.getItem('calisthenics_exercise_logs_v3')) || defaultExerciseLogs;
@@ -589,6 +593,7 @@
                 customInput.value = log.exercise;
             }
 
+            document.getElementById('input-sets').value = log.sets || 1;
             document.getElementById('input-value').value = log.value;
             document.getElementById('input-unit').value = log.unit || 'op.';
 
@@ -604,6 +609,7 @@
             const date = document.getElementById('input-date').value;
             const selectVal = document.getElementById('input-exercise-select').value;
             const customVal = document.getElementById('input-custom-exercise').value.trim();
+            const sets = parseInt(document.getElementById('input-sets').value) || 1;
             const value = parseFloat(document.getElementById('input-value').value);
             const unit = document.getElementById('input-unit').value;
 
@@ -619,7 +625,7 @@
                 // Úprava existujícího záznamu
                 const idx = exerciseLogs.findIndex(l => l.id === editingExerciseLogId);
                 if (idx !== -1) {
-                    exerciseLogs[idx] = { id: editingExerciseLogId, date, exercise: exerciseName, value, unit };
+                    exerciseLogs[idx] = { id: editingExerciseLogId, date, exercise: exerciseName, sets, value, unit };
                 }
                 editingExerciseLogId = null;
 
@@ -628,7 +634,7 @@
                 submitBtn.className = "bg-brand-500 hover:bg-brand-600 text-slate-900 font-bold py-2.5 px-6 rounded-lg transition text-sm flex items-center";
             } else {
                 // Nový záznam
-                const newLog = { id: Date.now().toString(), date, exercise: exerciseName, value, unit };
+                const newLog = { id: Date.now().toString(), date, exercise: exerciseName, sets, value, unit };
                 exerciseLogs.push(newLog);
             }
 
@@ -684,10 +690,11 @@
             sorted.forEach(log => {
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-800/50 transition";
+                const setsDisplay = log.sets ? `${log.sets}× ` : '';
                 tr.innerHTML = `
                     <td class="p-3 text-slate-300 font-mono text-xs">${log.date}</td>
                     <td class="p-3 font-medium text-white">${log.exercise}</td>
-                    <td class="p-3 font-bold text-brand-500">${log.value} ${log.unit || ''}</td>
+                    <td class="p-3 font-bold text-brand-500">${setsDisplay}${log.value} ${log.unit || ''}</td>
                     <td class="p-3 text-right">
                         <button onclick="editExerciseLog('${log.id}')" class="text-slate-400 hover:text-amber-400 transition text-xs p-1 mr-1" title="Upravit">
                             <i class="fa-solid fa-pen"></i>
@@ -711,7 +718,7 @@
             const ctx = chartCanvas.getContext('2d');
             const filtered = exerciseLogs
                 .filter(l => l.exercise === selectedExercise)
-                .sort((a, b) => new Date(a.date) - new Date(b.date));
+                .sort((a, b) => new Date(a.date) - new Date(a.date));
 
             const labels = filtered.map(l => l.date);
             const dataValues = filtered.map(l => l.value);
