@@ -69,8 +69,8 @@
                     <p class="text-slate-400 text-sm mt-1">Sestav a upravuj si vlastní tréninkové cykly, cviky, série a opakování.</p>
                 </div>
                 <div class="flex items-center gap-2">
-                    <button onclick="resetProgramToDefault()" class="bg-slate-800 hover:bg-red-900/40 text-slate-400 hover:text-red-400 border border-slate-700 font-medium px-3 py-2.5 rounded-xl text-xs transition" title="Obnovit výchozí plán">
-                        <i class="fa-solid fa-rotate-left"></i>
+                    <button onclick="hardResetData()" class="bg-slate-800 hover:bg-red-900/50 text-slate-400 hover:text-red-300 border border-slate-700 font-medium px-3 py-2.5 rounded-xl text-xs transition flex items-center" title="Nouzový reset poškozených dat">
+                        <i class="fa-solid fa-rotate-left mr-1.5"></i> Reset Aplikace
                     </button>
                     <button onclick="toggleProgramEditMode()" id="edit-program-btn" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition shadow-lg shadow-indigo-600/30 flex items-center">
                         <i class="fa-solid fa-pen-to-square mr-2"></i> Upravit Plán
@@ -318,7 +318,7 @@
 
     <!-- JS Skripty -->
     <script>
-        // --- 1. DATOVÁ STRUKTURA TRÉNINKOVÉHO PLÁNU ---
+        // --- VÝCHOZÍ DATA ---
         const defaultProgram = [
             {
                 id: 'w1',
@@ -368,53 +368,6 @@
             }
         ];
 
-        let programData = defaultProgram;
-        try {
-            const stored = localStorage.getItem('calisthenics_program_v3');
-            if (stored) {
-                const parsed = JSON.parse(stored);
-                if (Array.isArray(parsed) && parsed.length > 0) {
-                    programData = parsed;
-                }
-            }
-        } catch(e) {}
-
-        let isProgramEditMode = false;
-
-        const defaultExerciseLogs = [
-            { id: '1', date: '2026-09-15', exercise: 'Full Front Lever', sets: 3, value: 3.5, unit: 's' },
-            { id: '2', date: '2026-09-22', exercise: 'Full Front Lever', sets: 4, value: 4.0, unit: 's' },
-            { id: '3', date: '2026-10-01', exercise: 'Full Front Lever', sets: 4, value: 5.0, unit: 's' },
-            { id: '4', date: '2026-10-05', exercise: 'HSPU (Zem)', sets: 4, value: 4, unit: 'op.' },
-            { id: '5', date: '2026-10-12', exercise: 'HSPU (Zem)', sets: 4, value: 5, unit: 'op.' },
-            { id: '6', date: '2026-10-06', exercise: 'HSPU (Bradla)', sets: 3, value: 3, unit: 'op.' },
-            { id: '7', date: '2026-10-14', exercise: 'HSPU (Bradla)', sets: 3, value: 5, unit: 'op.' }
-        ];
-
-        let exerciseLogs = defaultExerciseLogs;
-        try {
-            const stored = localStorage.getItem('calisthenics_exercise_logs_v3');
-            if (stored) exerciseLogs = JSON.parse(stored);
-        } catch(e) {}
-
-        let editingExerciseLogId = null;
-
-        const defaultNutritionLogs = [
-            { id: 'n1', date: '2026-10-15', calories: 2750, carbs: 320, protein: 155 },
-            { id: 'n2', date: '2026-10-16', calories: 2850, carbs: 340, protein: 160 },
-            { id: 'n3', date: '2026-10-17', calories: 2900, carbs: 360, protein: 165 },
-            { id: 'n4', date: '2026-10-18', calories: 2800, carbs: 330, protein: 158 }
-        ];
-
-        let nutritionLogs = defaultNutritionLogs;
-        try {
-            const stored = localStorage.getItem('calisthenics_nutrition_logs_v3');
-            if (stored) nutritionLogs = JSON.parse(stored);
-        } catch(e) {}
-
-        let editingNutritionLogId = null;
-
-        // VZOROVÁ JÍDLA S FOTKAMI Z TVÉ HISTORIE
         const defaultPresetMeals = [
             {
                 id: 'pm1',
@@ -450,15 +403,78 @@
             }
         ];
 
-        let presetMeals = defaultPresetMeals;
-        try {
-            const stored = localStorage.getItem('calisthenics_presets_v2');
-            if (stored) presetMeals = JSON.parse(stored);
-        } catch(e) {}
+        const defaultExerciseLogs = [
+            { id: '1', date: '2026-09-15', exercise: 'Full Front Lever', sets: 3, value: 3.5, unit: 's' },
+            { id: '2', date: '2026-09-22', exercise: 'Full Front Lever', sets: 4, value: 4.0, unit: 's' },
+            { id: '3', date: '2026-10-01', exercise: 'Full Front Lever', sets: 4, value: 5.0, unit: 's' },
+            { id: '4', date: '2026-10-05', exercise: 'HSPU (Zem)', sets: 4, value: 4, unit: 'op.' },
+            { id: '5', date: '2026-10-12', exercise: 'HSPU (Zem)', sets: 4, value: 5, unit: 'op.' },
+            { id: '6', date: '2026-10-06', exercise: 'HSPU (Bradla)', sets: 3, value: 3, unit: 'op.' },
+            { id: '7', date: '2026-10-14', exercise: 'HSPU (Bradla)', sets: 3, value: 5, unit: 'op.' }
+        ];
 
+        const defaultNutritionLogs = [
+            { id: 'n1', date: '2026-10-15', calories: 2750, carbs: 320, protein: 155 },
+            { id: 'n2', date: '2026-10-16', calories: 2850, carbs: 340, protein: 160 },
+            { id: 'n3', date: '2026-10-17', calories: 2900, carbs: 360, protein: 165 },
+            { id: 'n4', date: '2026-10-18', calories: 2800, carbs: 330, protein: 158 }
+        ];
+
+        // --- NAČTENÍ PAMĚTI S BEZPEČNOSTNÍ POJISTKOU ---
+        let programData = defaultProgram;
+        let exerciseLogs = defaultExerciseLogs;
+        let nutritionLogs = defaultNutritionLogs;
+        let presetMeals = defaultPresetMeals;
+
+        function safeLoadAll() {
+            try {
+                const p = localStorage.getItem('calisthenics_program_v3');
+                if (p) {
+                    const parsed = JSON.parse(p);
+                    if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].days) programData = parsed;
+                }
+            } catch(e) { programData = defaultProgram; }
+
+            try {
+                const el = localStorage.getItem('calisthenics_exercise_logs_v3');
+                if (el) exerciseLogs = JSON.parse(el);
+            } catch(e) { exerciseLogs = defaultExerciseLogs; }
+
+            try {
+                const nl = localStorage.getItem('calisthenics_nutrition_logs_v3');
+                if (nl) nutritionLogs = JSON.parse(nl);
+            } catch(e) { nutritionLogs = defaultNutritionLogs; }
+
+            try {
+                const pm = localStorage.getItem('calisthenics_presets_v2');
+                if (pm) presetMeals = JSON.parse(pm);
+            } catch(e) { presetMeals = defaultPresetMeals; }
+        }
+
+        safeLoadAll();
+
+        let isProgramEditMode = false;
+        let editingExerciseLogId = null;
+        let editingNutritionLogId = null;
         let exerciseChartInstance = null;
         let nutritionChartInstance = null;
         let currentNutritionMetric = 'calories';
+
+        // NOUZOVÝ RESET
+        function hardResetData() {
+            if (confirm("Chceš provést kompletní reset paměti aplikace? Tím se vyčistí poškozená data a obnoví výchozí trénink i jídla.")) {
+                localStorage.clear();
+                programData = defaultProgram;
+                exerciseLogs = defaultExerciseLogs;
+                nutritionLogs = defaultNutritionLogs;
+                presetMeals = defaultPresetMeals;
+                saveProgram();
+                saveExerciseLogs();
+                saveNutritionLogs();
+                savePresetMeals();
+                location.reload();
+            }
+        }
 
         try {
             document.getElementById('input-date').valueAsDate = new Date();
@@ -469,14 +485,6 @@
         // --- LOGIKA TRÉNINKOVÉHO PLÁNU ---
         function saveProgram() {
             localStorage.setItem('calisthenics_program_v3', JSON.stringify(programData));
-        }
-
-        function resetProgramToDefault() {
-            if (confirm("Chceš obnovit výchozí tréninkový plán? Tvoje úpravy v plánu se přepsají.")) {
-                programData = defaultProgram;
-                saveProgram();
-                renderProgram();
-            }
         }
 
         function toggleProgramEditMode() {
@@ -499,12 +507,17 @@
         }
 
         function readInputsIntoProgramData() {
-            programData.forEach(week => {
-                const weekTitleInput = document.getElementById(`week-title-${week.id}`); if (weekTitleInput) week.title = weekTitleInput.value;  (week.days \vert{}\vert{} []).forEach(day => { const dayNameInput = document.getElementById(`day-name-${day.id}`);
+            (programData || []).forEach(week => {
+                const weekTitleInput = document.getElementById(`week-title-${week.id}`);
+                if (weekTitleInput) week.title = weekTitleInput.value;
+
+                (week.days || []).forEach(day => {
+                    const dayNameInput = document.getElementById(`day-name-${day.id}`);
                     if (dayNameInput) day.name = dayNameInput.value;
 
                     (day.exercises || []).forEach(ex => {
-                        const exNameInput = document.getElementById(`ex-name-${ex.id}`); const exTargetInput = document.getElementById(`ex-target-${ex.id}`);
+                        const exNameInput = document.getElementById(`ex-name-${ex.id}`);
+                        const exTargetInput = document.getElementById(`ex-target-${ex.id}`);
                         if (exNameInput) ex.name = exNameInput.value;
                         if (exTargetInput) ex.target = exTargetInput.value;
                     });
@@ -517,83 +530,90 @@
             if (!container) return;
             container.innerHTML = '';
 
-            programData.forEach(week => {
-                const weekDiv = document.createElement('div');
-                weekDiv.className = "space-y-4 bg-slate-900/80 p-5 rounded-2xl border border-slate-800 shadow-lg";
+            try {
+                (programData || []).forEach(week => {
+                    const weekDiv = document.createElement('div');
+                    weekDiv.className = "space-y-4 bg-slate-900/80 p-5 rounded-2xl border border-slate-800 shadow-lg";
 
-                let weekHeaderHtml = '';
-                if (isProgramEditMode) {
-                    weekHeaderHtml = `
-                        <div class="flex items-center justify-between gap-3 mb-2">
-                            <input type="text" id="week-title-${week.id}" value="${week.title || ''}" class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-1.5 font-bold text-white w-full text-base">
-                            <button onclick="deleteWeek('${week.id}')" class="text-red-400 hover:text-red-300 text-xs px-2 py-1"><i class="fa-solid fa-trash"></i> Smazat</button>
-                        </div>
-                    `;
-                } else {
-                    weekHeaderHtml = `
-                        <h3 class="text-lg font-bold text-slate-200 flex items-center">
-                            <i class="fa-solid fa-layer-group text-brand-400 mr-2.5"></i> ${week.title || ''}
-                        </h3>
-                    `;
-                }
-
-                let daysHtml = '<div class="grid md:grid-cols-2 gap-4">';
-                (week.days || []).forEach(day => {
-                    daysHtml += `
-                        <div class="bg-slate-950/80 rounded-xl p-4 border border-slate-800">
-                            <div class="flex justify-between items-center mb-3">
-                                ${isProgramEditMode ? 
-                                    `<input type="text" id="day-name-${day.id}" value="${day.name || ''}" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-xs font-bold text-brand-400 w-full mr-2">
-                                     <button onclick="deleteDay('${week.id}', '${day.id}')" class="text-red-400 hover:text-red-300 text-xs"><i class="fa-solid fa-xmark"></i></button>` :
-                                    `<span class="font-bold text-brand-400 text-sm">${day.name || ''}</span>`
-                                }
+                    let weekHeaderHtml = '';
+                    if (isProgramEditMode) {
+                        weekHeaderHtml = `
+                            <div class="flex items-center justify-between gap-3 mb-2">
+                                <input type="text" id="week-title-${week.id}" value="${week.title || ''}" class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-1.5 font-bold text-white w-full text-base">
+                                <button onclick="deleteWeek('${week.id}')" class="text-red-400 hover:text-red-300 text-xs px-2 py-1"><i class="fa-solid fa-trash"></i> Smazat</button>
                             </div>
-                            <ul class="space-y-2 text-sm text-slate-300">
-                    `;
-
-                    (day.exercises || []).forEach(ex => {
-                        daysHtml += `
-                            <li class="flex justify-between items-center border-b border-slate-800/80 pb-2 gap-2">
-                                ${isProgramEditMode ? `
-                                    <input type="text" id="ex-name-${ex.id}" value="${ex.name || ''}" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs w-2/3 text-white">
-                                    <input type="text" id="ex-target-${ex.id}" value="${ex.target || ''}" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs w-1/3 text-amber-400 font-semibold">
-                                    <button onclick="deleteExercise('${week.id}', '${day.id}', '${ex.id}')" class="text-slate-500 hover:text-red-400 text-xs"><i class="fa-solid fa-trash"></i></button>
-                                ` : `
-                                    <span>${ex.name || ''}</span>
-                                    <span class="font-semibold text-slate-100 bg-slate-900 px-2 py-0.5 rounded text-xs border border-slate-800">${ex.target || ''}</span>
-                                `}
-                            </li>
                         `;
-                    });
+                    } else {
+                        weekHeaderHtml = `
+                            <h3 class="text-lg font-bold text-slate-200 flex items-center">
+                                <i class="fa-solid fa-layer-group text-brand-400 mr-2.5"></i> ${week.title || ''}
+                            </h3>
+                        `;
+                    }
 
-                    daysHtml += `</ul>`;
+                    let daysHtml = '<div class="grid md:grid-cols-2 gap-4">';
+                    (week.days || []).forEach(day => {
+                        daysHtml += `
+                            <div class="bg-slate-950/80 rounded-xl p-4 border border-slate-800">
+                                <div class="flex justify-between items-center mb-3">
+                                    ${isProgramEditMode ? 
+                                        `<input type="text" id="day-name-${day.id}" value="${day.name || ''}" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-xs font-bold text-brand-400 w-full mr-2">
+                                         <button onclick="deleteDay('${week.id}', '${day.id}')" class="text-red-400 hover:text-red-300 text-xs"><i class="fa-solid fa-xmark"></i></button>` :
+                                        `<span class="font-bold text-brand-400 text-sm">${day.name || ''}</span>`
+                                    }
+                                </div>
+                                <ul class="space-y-2 text-sm text-slate-300">
+                        `;
+
+                        (day.exercises || []).forEach(ex => {
+                            daysHtml += `
+                                <li class="flex justify-between items-center border-b border-slate-800/80 pb-2 gap-2">
+                                    ${isProgramEditMode ? `
+                                        <input type="text" id="ex-name-${ex.id}" value="${ex.name || ''}" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs w-2/3 text-white">
+                                        <input type="text" id="ex-target-${ex.id}" value="${ex.target || ''}" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs w-1/3 text-amber-400 font-semibold">
+                                        <button onclick="deleteExercise('${week.id}', '${day.id}', '${ex.id}')" class="text-slate-500 hover:text-red-400 text-xs"><i class="fa-solid fa-trash"></i></button>
+                                    ` : `
+                                        <span>${ex.name || ''}</span>
+                                        <span class="font-semibold text-slate-100 bg-slate-900 px-2 py-0.5 rounded text-xs border border-slate-800">${ex.target || ''}</span>
+                                    `}
+                                </li>
+                            `;
+                        });
+
+                        daysHtml += `</ul>`;
+
+                        if (isProgramEditMode) {
+                            daysHtml += `
+                                <button onclick="addExercise('${week.id}', '${day.id}')" class="mt-3 text-xs text-brand-400 hover:text-brand-300 font-semibold flex items-center">
+                                    <i class="fa-solid fa-plus mr-1"></i> Přidat Cvik
+                                </button>
+                            `;
+                        }
+
+                        daysHtml += `</div>`;
+                    });
 
                     if (isProgramEditMode) {
                         daysHtml += `
-                            <button onclick="addExercise('${week.id}', '${day.id}')" class="mt-3 text-xs text-brand-400 hover:text-brand-300 font-semibold flex items-center">
-                                <i class="fa-solid fa-plus mr-1"></i> Přidat Cvik
-                            </button>
+                            <div class="bg-slate-950/40 rounded-xl p-4 border border-dashed border-slate-800 flex items-center justify-center">
+                                <button onclick="addDay('${week.id}')" class="text-xs font-semibold text-slate-400 hover:text-white">
+                                    <i class="fa-solid fa-plus mr-1 text-brand-400"></i> Přidat Den do tohoto Bloku
+                                </button>
+                            </div>
                         `;
                     }
 
                     daysHtml += `</div>`;
+
+                    weekDiv.innerHTML = weekHeaderHtml + daysHtml;
+                    container.appendChild(weekDiv);
                 });
-
-                if (isProgramEditMode) {
-                    daysHtml += `
-                        <div class="bg-slate-950/40 rounded-xl p-4 border border-dashed border-slate-800 flex items-center justify-center">
-                            <button onclick="addDay('${week.id}')" class="text-xs font-semibold text-slate-400 hover:text-white">
-                                <i class="fa-solid fa-plus mr-1 text-brand-400"></i> Přidat Den do tohoto Bloku
-                            </button>
-                        </div>
-                    `;
-                }
-
-                daysHtml += `</div>`;
-
-                weekDiv.innerHTML = weekHeaderHtml + daysHtml;
-                container.appendChild(weekDiv);
-            });
+            } catch (err) {
+                console.error("Vykreslování tréninku selhalo, provádím auto-reset:", err);
+                programData = defaultProgram;
+                saveProgram();
+                container.innerHTML = '<div class="p-4 bg-red-900/30 text-red-300 rounded-xl text-xs">Poškozený tréninkový plán byl opraven a resetován na výchozí.</div>';
+            }
         }
 
         function addWeek() {
@@ -659,7 +679,7 @@
         }
 
         function getAllUniqueExercises() {
-            const set = new Set(exerciseLogs.map(l => l.exercise));
+            const set = new Set((exerciseLogs || []).map(l => l.exercise));
             if (set.size === 0) {
                 set.add('Full Front Lever');
                 set.add('HSPU (Zem)');
@@ -796,7 +816,7 @@
                 card.className = "bg-slate-900 p-4 rounded-2xl border border-slate-800 shadow-lg relative";
                 card.innerHTML = `
                     <div class="text-xs text-slate-400 font-medium truncate">${ex}</div>
-                    <div class="text-xl font-black text-brand-400 mt-1">${maxVal}${unit}</div>
+                    <div class="text-xl font-black text-brand-400 mt-1">${maxVal} ${unit}</div>
                 `;
                 container.appendChild(card);
             });
@@ -822,7 +842,7 @@
                 tr.innerHTML = `
                     <td class="p-3.5 text-slate-400 font-mono text-xs">${log.date}</td>
                     <td class="p-3.5 font-medium text-white">${log.exercise}</td>
-                    <td class="p-3.5 font-bold text-brand-400">${setsDisplay}${log.value}${log.unit || ''}</td>
+                    <td class="p-3.5 font-bold text-brand-400">${setsDisplay}${log.value} ${log.unit || ''}</td>
                     <td class="p-3.5 text-right">
                         <button onclick="editExerciseLog('${log.id}')" class="text-slate-400 hover:text-amber-400 transition text-xs p-1.5 mr-1" title="Upravit">
                             <i class="fa-solid fa-pen"></i>
@@ -908,7 +928,7 @@
             if (!grid) return;
             grid.innerHTML = '';
 
-            presetMeals.forEach(meal => {
+            (presetMeals || []).forEach(meal => {
                 const card = document.createElement('div');
                 card.className = "bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-lg hover:border-emerald-500/50 transition duration-300 flex flex-col group";
                 
@@ -931,4 +951,331 @@
                                 <span class="bg-purple-500/10 text-purple-400 px-2 py-0.5 rounded-md border border-purple-500/20">${meal.protein}g B</span>
                             </div>
                         </div>
-                        <button onclick="logPresetMealToToday('${meal.id}')" class
+                        <button onclick="logPresetMealToToday('${meal.id}')" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-2 px-3 rounded-xl transition text-xs flex items-center justify-center shadow-md shadow-emerald-500/10">
+                            <i class="fa-solid fa-plus mr-1.5"></i> Přidat do dneška
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function deletePresetMeal(id) {
+            presetMeals = presetMeals.filter(m => m.id !== id);
+            savePresetMeals();
+            renderPresetMeals();
+        }
+
+        function logPresetMealToToday(id) {
+            const meal = presetMeals.find(m => m.id === id);
+            if (!meal) return;
+
+            const today = new Date().toISOString().split('T')[0];
+            const existingIdx = nutritionLogs.findIndex(l => l.date === today);
+
+            if (existingIdx !== -1) {
+                nutritionLogs[existingIdx].calories += meal.calories;
+                nutritionLogs[existingIdx].carbs += meal.carbs;
+                nutritionLogs[existingIdx].protein += meal.protein;
+            } else {
+                nutritionLogs.push({
+                    id: Date.now().toString(),
+                    date: today,
+                    calories: meal.calories,
+                    carbs: meal.carbs,
+                    protein: meal.protein
+                });
+            }
+
+            saveNutritionLogs();
+            renderNutritionSection();
+        }
+
+        document.getElementById('create-preset-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const title = document.getElementById('preset-title').value;
+            const cal = parseInt(document.getElementById('preset-cal').value);
+            const carbs = parseInt(document.getElementById('preset-carbs').value);
+            const prot = parseInt(document.getElementById('preset-prot').value);
+            const urlImg = document.getElementById('preset-imgurl').value;
+            const fileInput = document.getElementById('preset-file');
+
+            const saveMeal = (imgData) => {
+                const newMeal = {
+                    id: 'pm_' + Date.now(),
+                    title,
+                    calories: cal,
+                    carbs,
+                    protein: prot,
+                    img: imgData || urlImg || ''
+                };
+                presetMeals.push(newMeal);
+                savePresetMeals();
+                renderPresetMeals();
+                toggleNewMealModal();
+                e.target.reset();
+            };
+
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    saveMeal(evt.target.result);
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                saveMeal('');
+            }
+        });
+
+
+        // --- LOGIKA HISTORIE VÝŽIVY ---
+        function saveNutritionLogs() {
+            localStorage.setItem('calisthenics_nutrition_logs_v3', JSON.stringify(nutritionLogs));
+        }
+
+        function editNutritionLog(id) {
+            const log = nutritionLogs.find(l => l.id === id);
+            if (!log) return;
+
+            editingNutritionLogId = id;
+
+            document.getElementById('nutri-date').value = log.date;
+            document.getElementById('nutri-calories').value = log.calories;
+            document.getElementById('nutri-carbs').value = log.carbs;
+            document.getElementById('nutri-protein').value = log.protein;
+
+            const submitBtn = document.getElementById('nutrition-submit-btn');
+            submitBtn.innerHTML = `<i class="fa-solid fa-check mr-2"></i> Aktualizovat Makra`;
+            submitBtn.className = "bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2.5 px-6 rounded-xl transition shadow-lg shadow-amber-500/20 text-sm flex items-center";
+
+            document.getElementById('nutrition-form-card').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        document.getElementById('add-nutrition-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const date = document.getElementById('nutri-date').value;
+            const calories = parseInt(document.getElementById('nutri-calories').value);
+            const carbs = parseInt(document.getElementById('nutri-carbs').value);
+            const protein = parseInt(document.getElementById('nutri-protein').value);
+
+            if (!date || isNaN(calories) || isNaN(carbs) || isNaN(protein)) return;
+
+            if (editingNutritionLogId) {
+                const idx = nutritionLogs.findIndex(l => l.id === editingNutritionLogId);
+                if (idx !== -1) {
+                    nutritionLogs[idx] = { id: editingNutritionLogId, date, calories, carbs, protein };
+                }
+                editingNutritionLogId = null;
+
+                const submitBtn = document.getElementById('nutrition-submit-btn');
+                submitBtn.innerHTML = `<i class="fa-solid fa-plus mr-2"></i> Uložit Makra`;
+                submitBtn.className = "bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-2.5 px-6 rounded-xl transition shadow-lg shadow-emerald-500/20 text-sm flex items-center";
+            } else {
+                const existingIdx = nutritionLogs.findIndex(l => l.date === date);
+                if (existingIdx !== -1) {
+                    nutritionLogs[existingIdx] = { id: nutritionLogs[existingIdx].id, date, calories, carbs, protein };
+                } else {
+                    nutritionLogs.push({ id: Date.now().toString(), date, calories, carbs, protein });
+                }
+            }
+
+            saveNutritionLogs();
+
+            document.getElementById('nutri-calories').value = '';
+            document.getElementById('nutri-carbs').value = '';
+            document.getElementById('nutri-protein').value = '';
+
+            renderNutritionSection();
+        });
+
+        function deleteNutritionLog(id) {
+            nutritionLogs = nutritionLogs.filter(l => l.id !== id);
+            saveNutritionLogs();
+            renderNutritionSection();
+        }
+
+        function setNutritionMetric(metric) {
+            currentNutritionMetric = metric;
+
+            const btnCal = document.getElementById('nutri-btn-calories');
+            const btnCarbs = document.getElementById('nutri-btn-carbs');
+            const btnProt = document.getElementById('nutri-btn-protein');
+
+            btnCal.className = metric === 'calories' ? "px-3 py-1.5 rounded-lg bg-amber-500 text-slate-950 transition font-bold" : "px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition";
+            btnCarbs.className = metric === 'carbs' ? "px-3 py-1.5 rounded-lg bg-cyan-500 text-slate-950 transition font-bold" : "px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition";
+            btnProt.className = metric === 'protein' ? "px-3 py-1.5 rounded-lg bg-purple-500 text-slate-950 transition font-bold" : "px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition";
+
+            updateNutritionChart();
+        }
+
+        function updateNutritionChart() {
+            const chartCanvas = document.getElementById('nutritionChart');
+            if (!chartCanvas || typeof Chart === 'undefined') return;
+
+            const ctx = chartCanvas.getContext('2d');
+            const sorted = [...nutritionLogs].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            const labels = sorted.map(l => l.date);
+
+            let dataValues = [];
+            let labelTitle = '';
+            let colorHex = '#f59e0b';
+            let bgHex = 'rgba(245, 158, 11, 0.12)';
+
+            if (currentNutritionMetric === 'calories') {
+                dataValues = sorted.map(l => l.calories);
+                labelTitle = 'Kalorie (kcal)';
+                colorHex = '#f59e0b';
+                bgHex = 'rgba(245, 158, 11, 0.12)';
+            } else if (currentNutritionMetric === 'carbs') {
+                dataValues = sorted.map(l => l.carbs);
+                labelTitle = 'Sacharidy (g)';
+                colorHex = '#06b6d4';
+                bgHex = 'rgba(6, 182, 212, 0.12)';
+            } else if (currentNutritionMetric === 'protein') {
+                dataValues = sorted.map(l => l.protein);
+                labelTitle = 'Bílkoviny (g)';
+                colorHex = '#a855f7';
+                bgHex = 'rgba(168, 85, 247, 0.12)';
+            }
+
+            if (nutritionChartInstance) {
+                nutritionChartInstance.destroy();
+            }
+
+            nutritionChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: labelTitle,
+                        data: dataValues,
+                        borderColor: colorHex,
+                        backgroundColor: bgHex,
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.3,
+                        pointBackgroundColor: colorHex,
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#94a3b8' } } },
+                    scales: {
+                        x: { grid: { color: 'rgba(51, 65, 85, 0.3)' }, ticks: { color: '#94a3b8' } },
+                        y: { beginAtZero: false, grid: { color: 'rgba(51, 65, 85, 0.3)' }, ticks: { color: '#94a3b8' } }
+                    }
+                }
+            });
+        }
+
+        function renderNutritionTable() {
+            const tbody = document.getElementById('nutrition-history-tbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            const sorted = [...nutritionLogs].sort((a, b) => new Date(b.date) - new Date(a.date));
+            document.getElementById('nutri-logs-count').innerText = `${sorted.length} dnů`;
+
+            if (sorted.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">Žádné záznamy stravy.</td></tr>`;
+                return;
+            }
+
+            sorted.forEach(log => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-800/40 transition";
+                tr.innerHTML = `
+                    <td class="p-3.5 text-slate-400 font-mono text-xs">${log.date}</td>
+                    <td class="p-3.5 font-bold text-amber-400">${log.calories} kcal</td>
+                    <td class="p-3.5 font-semibold text-cyan-400">${log.carbs} g</td>
+                    <td class="p-3.5 font-semibold text-purple-400">${log.protein} g</td>
+                    <td class="p-3.5 text-right">
+                        <button onclick="editNutritionLog('${log.id}')" class="text-slate-400 hover:text-amber-400 transition text-xs p-1.5 mr-1" title="Upravit">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                        <button onclick="deleteNutritionLog('${log.id}')" class="text-slate-500 hover:text-red-400 transition text-xs p-1.5" title="Smazat">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderNutritionSection() {
+            renderPresetMeals();
+            renderNutritionTable();
+            updateNutritionChart();
+        }
+
+
+        // --- PREPÍNANÍ ZÁLOŽEK ---
+        function switchTab(tab) {
+            const btnProg = document.getElementById('tab-btn-program');
+            const btnTrack = document.getElementById('tab-btn-tracker');
+            const btnNutri = document.getElementById('tab-btn-nutrition');
+
+            const tabProg = document.getElementById('tab-program');
+            const tabTrack = document.getElementById('tab-tracker');
+            const tabNutri = document.getElementById('tab-nutrition');
+
+            [btnProg, btnTrack, btnNutri].forEach(btn => {
+                if (btn) btn.className = "px-3.5 py-2 rounded-xl font-medium transition-all duration-200 text-slate-400 hover:text-white hover:bg-slate-800";
+            });
+            [tabProg, tabTrack, tabNutri].forEach(t => {
+                if (t) t.classList.add('hidden');
+            });
+
+            if (tab === 'program' && tabProg) {
+                tabProg.classList.remove('hidden');
+                if (btnProg) btnProg.className = "px-3.5 py-2 rounded-xl font-semibold transition-all duration-200 bg-brand-500 text-slate-950 shadow-md shadow-brand-500/20";
+                renderProgram();
+            } else if (tab === 'tracker' && tabTrack) {
+                tabTrack.classList.remove('hidden');
+                if (btnTrack) btnTrack.className = "px-3.5 py-2 rounded-xl font-semibold transition-all duration-200 bg-brand-500 text-slate-950 shadow-md shadow-brand-500/20";
+                renderTrackerSection();
+            } else if (tab === 'nutrition' && tabNutri) {
+                tabNutri.classList.remove('hidden');
+                if (btnNutri) btnNutri.className = "px-3.5 py-2 rounded-xl font-semibold transition-all duration-200 bg-brand-500 text-slate-950 shadow-md shadow-brand-500/20";
+                renderNutritionSection();
+            }
+        }
+
+        // INITIALIZACE & MAGIC LINK CONTROLLER
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProgram();
+
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('addNutri') === '1') {
+                const cal = parseInt(urlParams.get('cal'));
+                const carbs = parseInt(urlParams.get('carbs'));
+                const prot = parseInt(urlParams.get('prot'));
+                
+                if (!isNaN(cal) && !isNaN(carbs) && !isNaN(prot)) {
+                    const today = new Date().toISOString().split('T')[0];
+                    const existingIdx = nutritionLogs.findIndex(l => l.date === today);
+                    if (existingIdx !== -1) {
+                        nutritionLogs[existingIdx].calories += cal;
+                        nutritionLogs[existingIdx].carbs += carbs;
+                        nutritionLogs[existingIdx].protein += prot;
+                    } else {
+                        nutritionLogs.push({ 
+                            id: Date.now().toString(), 
+                            date: today, 
+                            calories: cal, 
+                            carbs: carbs, 
+                            protein: prot 
+                        });
+                    }
+                    saveNutritionLogs();
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    switchTab('nutrition');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
