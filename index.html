@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CaliTracker & NutriEats</title>
+    <title>CaliTracker & NutriEats Pro</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -13,6 +13,7 @@
                 extend: {
                     colors: {
                         brand: {
+                            400: '#2dd4bf',
                             500: '#14b8a6',
                             600: '#0d9488',
                             700: '#0f766e'
@@ -27,45 +28,48 @@
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-brand-500 selection:text-slate-900">
 
     <!-- Navigace -->
-    <header class="bg-slate-800 border-b border-slate-700 sticky top-0 z-50">
-        <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
+    <header class="bg-slate-900/90 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
             <div class="flex items-center space-x-3">
-                <div class="bg-brand-500 text-slate-900 p-2 rounded-lg">
+                <div class="bg-gradient-to-tr from-brand-600 to-brand-400 text-slate-950 p-2.5 rounded-xl shadow-lg shadow-brand-500/20">
                     <i class="fa-solid font-bold fa-dumbbell text-xl"></i>
                 </div>
-                <h1 class="text-xl font-bold tracking-wide">CaliTracker</h1>
+                <div>
+                    <h1 class="text-xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">CaliTracker</h1>
+                    <span class="text-[10px] font-semibold tracking-widest uppercase text-brand-400 block -mt-1">Workout & Nutrition</span>
+                </div>
             </div>
             <nav class="flex space-x-1 sm:space-x-2 text-xs sm:text-sm">
-                <button onclick="switchTab('program')" id="tab-btn-program" class="px-3 py-2 rounded-lg font-semibold transition bg-brand-500 text-slate-900">
-                    <i class="fa-solid fa-calendar-days mr-1"></i> Plán
+                <button onclick="switchTab('program')" id="tab-btn-program" class="px-3.5 py-2 rounded-xl font-semibold transition-all duration-200 bg-brand-500 text-slate-950 shadow-md shadow-brand-500/20">
+                    <i class="fa-solid fa-calendar-days mr-1.5"></i> Plán
                 </button>
-                <button onclick="switchTab('tracker')" id="tab-btn-tracker" class="px-3 py-2 rounded-lg font-medium transition text-slate-400 hover:text-white hover:bg-slate-700">
-                    <i class="fa-solid fa-chart-line mr-1"></i> Záznamník & Cviky
+                <button onclick="switchTab('tracker')" id="tab-btn-tracker" class="px-3.5 py-2 rounded-xl font-medium transition-all duration-200 text-slate-400 hover:text-white hover:bg-slate-800">
+                    <i class="fa-solid fa-chart-line mr-1.5"></i> Cviky & PRs
                 </button>
-                <button onclick="switchTab('nutrition')" id="tab-btn-nutrition" class="px-3 py-2 rounded-lg font-medium transition text-slate-400 hover:text-white hover:bg-slate-700">
-                    <i class="fa-solid fa-utensils mr-1"></i> Výživa & Makra
+                <button onclick="switchTab('nutrition')" id="tab-btn-nutrition" class="px-3.5 py-2 rounded-xl font-medium transition-all duration-200 text-slate-400 hover:text-white hover:bg-slate-800">
+                    <i class="fa-solid fa-utensils mr-1.5"></i> Výživa & Katalog
                 </button>
             </nav>
         </div>
     </header>
 
     <!-- Hlavní Obsah -->
-    <main class="flex-grow max-w-5xl w-full mx-auto p-4 space-y-6">
+    <main class="flex-grow max-w-6xl w-full mx-auto p-4 sm:p-6 space-y-8">
 
         <!-- ================= Záložka 1: TRÉNINKOVÝ PLÁN (EDITOVATELNÝ) ================= -->
         <section id="tab-program" class="space-y-6">
-            <div class="bg-slate-800 rounded-xl p-6 border border-slate-700 shadow-lg flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+            <div class="bg-gradient-to-r from-slate-900 to-slate-800/80 rounded-2xl p-6 border border-slate-800 shadow-xl flex flex-col sm:flex-row justify-between sm:items-center gap-4">
                 <div>
-                    <h2 class="text-2xl font-bold text-white flex items-center">
-                        <i class="fa-solid fa-fire text-amber-500 mr-2"></i> Můj Tréninkový Plán
+                    <h2 class="text-2xl font-black text-white flex items-center">
+                        <i class="fa-solid fa-fire text-amber-500 mr-3"></i> Můj Tréninkový Plán
                     </h2>
                     <p class="text-slate-400 text-sm mt-1">Sestav a upravuj si vlastní tréninkové cykly, cviky, série a opakování.</p>
                 </div>
                 <div>
-                    <button onclick="toggleProgramEditMode()" id="edit-program-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2 rounded-lg text-sm transition flex items-center">
+                    <button onclick="toggleProgramEditMode()" id="edit-program-btn" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition shadow-lg shadow-indigo-600/30 flex items-center">
                         <i class="fa-solid fa-pen-to-square mr-2"></i> Upravit Plán
                     </button>
                 </div>
@@ -76,8 +80,8 @@
 
             <!-- Tlačítko pro přidání nového bloku/týdne v režimu úprav -->
             <div id="add-week-container" class="hidden text-center">
-                <button onclick="addWeek()" class="bg-slate-800 hover:bg-slate-700 border border-dashed border-slate-600 text-slate-300 font-bold px-6 py-3 rounded-xl transition text-sm">
-                    <i class="fa-solid fa-plus mr-2 text-brand-500"></i> Přidat Nový Tréninkový Blok/Týden
+                <button onclick="addWeek()" class="bg-slate-900 hover:bg-slate-800 border border-dashed border-slate-700 text-slate-300 font-bold px-6 py-3.5 rounded-2xl transition text-sm">
+                    <i class="fa-solid fa-plus mr-2 text-brand-400"></i> Přidat Nový Tréninkový Blok/Týden
                 </button>
             </div>
         </section>
@@ -88,51 +92,51 @@
 
             <!-- Osobní Rekordy (PRs - Dynamické) -->
             <div>
-                <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Osobní Rekordy (PRs)</h3>
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3" id="prs-container">
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center">
+                    <i class="fa-solid fa-trophy text-amber-400 mr-2"></i> Osobní Rekordy (PRs)
+                </h3>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3.5" id="prs-container">
                     <!-- Dynamicky vložené PR karty -->
                 </div>
             </div>
 
             <!-- Formulář pro Přidání / Úpravu Záznamu -->
-            <div class="bg-slate-800 rounded-xl p-5 border border-slate-700" id="exercise-form-card">
+            <div class="bg-slate-900/90 rounded-2xl p-6 border border-slate-800 shadow-xl" id="exercise-form-card">
                 <h3 class="text-lg font-bold text-white mb-4 flex items-center" id="exercise-form-title">
-                    <i class="fa-solid fa-plus-circle text-brand-500 mr-2"></i> Zapsat Výkon Cviku
+                    <i class="fa-solid fa-plus-circle text-brand-400 mr-2"></i> Zapsat Výkon Cviku
                 </h3>
                 <form id="add-log-form" class="grid sm:grid-cols-2 md:grid-cols-6 gap-4">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-400 mb-1">Datum</label>
-                        <input type="date" id="input-date" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500">
+                        <label class="block text-xs font-semibold text-slate-400 mb-1.5">Datum</label>
+                        <input type="date" id="input-date" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brand-500">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-400 mb-1">Cvik</label>
-                        <select id="input-exercise-select" onchange="handleExerciseSelectChange()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500">
-                            <!-- Možnosti generovány z historie + volba Nový cvik -->
+                        <label class="block text-xs font-semibold text-slate-400 mb-1.5">Cvik</label>
+                        <select id="input-exercise-select" onchange="handleExerciseSelectChange()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brand-500">
                         </select>
                     </div>
-                    <!-- Zobrazí se pokud uživatel zvolí '➕ Přidat nový cvik...' -->
                     <div id="custom-exercise-div" class="hidden">
-                        <label class="block text-xs font-semibold text-slate-400 mb-1">Název Nového Cviku</label>
-                        <input type="text" id="input-custom-exercise" placeholder="např. Muscle-Up" class="w-full bg-slate-900 border border-brand-500 rounded-lg px-3 py-2 text-sm text-white focus:outline-none">
+                        <label class="block text-xs font-semibold text-slate-400 mb-1.5">Název Nového Cviku</label>
+                        <input type="text" id="input-custom-exercise" placeholder="např. Muscle-Up" class="w-full bg-slate-950 border border-brand-500 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-400 mb-1">Série</label>
-                        <input type="number" id="input-sets" min="1" value="4" required placeholder="např. 4" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500">
+                        <label class="block text-xs font-semibold text-slate-400 mb-1.5">Série</label>
+                        <input type="number" id="input-sets" min="1" value="4" required placeholder="4" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brand-500">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-400 mb-1">Hodnota / Opakování</label>
-                        <input type="number" step="0.5" id="input-value" required placeholder="např. 8" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500">
+                        <label class="block text-xs font-semibold text-slate-400 mb-1.5">Hodnota / Opakování</label>
+                        <input type="number" step="0.5" id="input-value" required placeholder="8" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brand-500">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-400 mb-1">Jednotka</label>
-                        <select id="input-unit" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500">
+                        <label class="block text-xs font-semibold text-slate-400 mb-1.5">Jednotka</label>
+                        <select id="input-unit" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brand-500">
                             <option value="op.">opakování (op.)</option>
                             <option value="s">sekundy (s)</option>
                             <option value="kg">kilogramy (kg)</option>
                         </select>
                     </div>
                     <div class="sm:col-span-2 md:col-span-6 flex justify-end">
-                        <button type="submit" id="exercise-submit-btn" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-bold py-2.5 px-6 rounded-lg transition text-sm flex items-center">
+                        <button type="submit" id="exercise-submit-btn" class="bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold py-2.5 px-6 rounded-xl transition shadow-lg shadow-brand-500/20 text-sm flex items-center">
                             <i class="fa-solid fa-floppy-disk mr-2"></i> Uložit Výsledek
                         </button>
                     </div>
@@ -140,15 +144,14 @@
             </div>
 
             <!-- Interaktivní Graf Progresu Cviků -->
-            <div class="bg-slate-800 rounded-xl p-5 border border-slate-700 space-y-4">
+            <div class="bg-slate-900/90 rounded-2xl p-6 border border-slate-800 shadow-xl space-y-4">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <h3 class="text-lg font-bold text-white flex items-center">
                         <i class="fa-solid fa-chart-line text-indigo-400 mr-2"></i> Graf Progresu Cviků
                     </h3>
                     <div class="flex items-center space-x-2">
                         <label class="text-xs text-slate-400">Vybrat cvik:</label>
-                        <select id="chart-exercise-filter" onchange="updateExerciseChart()" class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-400">
-                            <!-- Generováno dynamicky podle dostupných cviků -->
+                        <select id="chart-exercise-filter" onchange="updateExerciseChart()" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none">
                         </select>
                     </div>
                 </div>
@@ -158,55 +161,113 @@
             </div>
 
             <!-- Historie Výkonů -->
-            <div class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden">
-                <div class="p-4 border-b border-slate-700 flex justify-between items-center">
+            <div class="bg-slate-900/90 rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
+                <div class="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-900">
                     <h3 class="text-lg font-bold text-white">Historie Cviků</h3>
-                    <span class="text-xs text-slate-400" id="logs-count">0 položek</span>
+                    <span class="text-xs font-semibold px-2.5 py-1 bg-slate-800 text-slate-300 rounded-lg" id="logs-count">0 položek</span>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm text-slate-300">
-                        <thead class="bg-slate-900/50 text-slate-400 text-xs uppercase border-b border-slate-700">
+                        <thead class="bg-slate-950/60 text-slate-400 text-xs uppercase border-b border-slate-800">
                             <tr>
-                                <th class="p-3">Datum</th>
-                                <th class="p-3">Cvik</th>
-                                <th class="p-3">Série & Výkon</th>
-                                <th class="p-3 text-right">Akce</th>
+                                <th class="p-3.5">Datum</th>
+                                <th class="p-3.5">Cvik</th>
+                                <th class="p-3.5">Série & Výkon</th>
+                                <th class="p-3.5 text-right">Akce</th>
                             </tr>
                         </thead>
-                        <tbody id="exercise-history-tbody" class="divide-y divide-slate-700/50"></tbody>
+                        <tbody id="exercise-history-tbody" class="divide-y divide-slate-800/60"></tbody>
                     </table>
                 </div>
             </div>
         </section>
 
 
-        <!-- ================= Záložka 3: VÝŽIVA & MAKRA ================= -->
-        <section id="tab-nutrition" class="space-y-6 hidden">
+        <!-- ================= Záložka 3: VÝŽIVA & KATALOG ================= -->
+        <section id="tab-nutrition" class="space-y-8 hidden">
 
-            <!-- Formulář pro Přidání / Úpravu Nutričního Záznamu -->
-            <div class="bg-slate-800 rounded-xl p-5 border border-slate-700" id="nutrition-form-card">
+            <!-- VISUAL FOOD CATALOG (Katalog Jídel s fotkami) -->
+            <div class="space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                        <h3 class="text-xl font-black text-white flex items-center">
+                            <i class="fa-solid fa-utensils text-emerald-400 mr-2.5"></i> Katalog Oblíbených Jídel
+                        </h3>
+                        <p class="text-slate-400 text-xs mt-0.5">Jedním kliknutím přidáš svoje točené jídlo do dnešního přehledu stravy.</p>
+                    </div>
+                    <button onclick="toggleNewMealModal()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs transition shadow-lg shadow-emerald-500/20 flex items-center self-start sm:self-auto">
+                        <i class="fa-solid fa-plus mr-1.5"></i> Vytvořit Nové Jídlo
+                    </button>
+                </div>
+
+                <!-- Formulář pro vytvoření nového jídla v katalogu (skrytý/rozbalovací) -->
+                <div id="new-meal-form-card" class="hidden bg-slate-900 border border-emerald-500/30 rounded-2xl p-5 shadow-2xl space-y-4">
+                    <h4 class="text-sm font-bold text-emerald-400 flex items-center">
+                        <i class="fa-solid fa-camera mr-2"></i> Přidat Jídlo do Katalogu
+                    </h4>
+                    <form id="create-preset-form" class="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        <div class="sm:col-span-2 md:col-span-1">
+                            <label class="block text-xs font-semibold text-slate-400 mb-1">Název jídla</label>
+                            <input type="text" id="preset-title" required placeholder="např. Milko Tvaroh + Vločky" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 mb-1">Fotka (Soubor z mobilu/PC)</label>
+                            <input type="file" id="preset-file" accept="image/*" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2 py-1.5 text-xs text-slate-300 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 mb-1">Nebo Odkaz na Fotku (URL)</label>
+                            <input type="url" id="preset-imgurl" placeholder="https://..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 mb-1">Kalorie (kcal)</label>
+                            <input type="number" id="preset-cal" required placeholder="450" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 mb-1">Sacharidy (g)</label>
+                            <input type="number" id="preset-carbs" required placeholder="50" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 mb-1">Bílkoviny (g)</label>
+                            <input type="number" id="preset-prot" required placeholder="40" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+                        </div>
+                        <div class="sm:col-span-2 md:col-span-3 flex justify-end gap-2">
+                            <button type="button" onclick="toggleNewMealModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white">Zrušit</button>
+                            <button type="submit" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-5 py-2 rounded-xl text-xs transition">Uložit do Katalogu</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Mřížka karet jídel -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="preset-meals-grid">
+                    <!-- Dynamicky generováno -->
+                </div>
+            </div>
+
+
+            <!-- Formulář pro Přidání / Úpravu Nutričního Záznamu Ručně -->
+            <div class="bg-slate-900/90 rounded-2xl p-6 border border-slate-800 shadow-xl" id="nutrition-form-card">
                 <h3 class="text-lg font-bold text-white mb-4 flex items-center" id="nutrition-form-title">
-                    <i class="fa-solid fa-utensils text-emerald-400 mr-2"></i> Zapsat Deníček Výživy
+                    <i class="fa-solid fa-pen-to-square text-emerald-400 mr-2"></i> Ruční Zápis Stravy
                 </h3>
                 <form id="add-nutrition-form" class="grid sm:grid-cols-2 md:grid-cols-4 gap-4">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-400 mb-1">Datum</label>
-                        <input type="date" id="nutri-date" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+                        <label class="block text-xs font-semibold text-slate-400 mb-1.5">Datum</label>
+                        <input type="date" id="nutri-date" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-400 mb-1">Kalorie (kcal)</label>
-                        <input type="number" id="nutri-calories" required placeholder="např. 2800" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+                        <label class="block text-xs font-semibold text-slate-400 mb-1.5">Kalorie (kcal)</label>
+                        <input type="number" id="nutri-calories" required placeholder="2800" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-400 mb-1">Sacharidy (g)</label>
-                        <input type="number" id="nutri-carbs" required placeholder="např. 350" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+                        <label class="block text-xs font-semibold text-slate-400 mb-1.5">Sacharidy (g)</label>
+                        <input type="number" id="nutri-carbs" required placeholder="350" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-400 mb-1">Bílkoviny (g)</label>
-                        <input type="number" id="nutri-protein" required placeholder="např. 160" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+                        <label class="block text-xs font-semibold text-slate-400 mb-1.5">Bílkoviny (g)</label>
+                        <input type="number" id="nutri-protein" required placeholder="160" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500">
                     </div>
                     <div class="sm:col-span-2 md:col-span-4 flex justify-end">
-                        <button type="submit" id="nutrition-submit-btn" class="bg-emerald-500 hover:bg-emerald-600 text-slate-900 font-bold py-2.5 px-6 rounded-lg transition text-sm flex items-center">
+                        <button type="submit" id="nutrition-submit-btn" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-2.5 px-6 rounded-xl transition shadow-lg shadow-emerald-500/20 text-sm flex items-center">
                             <i class="fa-solid fa-plus mr-2"></i> Uložit Makra
                         </button>
                     </div>
@@ -214,16 +275,15 @@
             </div>
 
             <!-- Interaktivní Graf Výživy s přepínáním -->
-            <div class="bg-slate-800 rounded-xl p-5 border border-slate-700 space-y-4">
+            <div class="bg-slate-900/90 rounded-2xl p-6 border border-slate-800 shadow-xl space-y-4">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <h3 class="text-lg font-bold text-white flex items-center">
                         <i class="fa-solid fa-chart-area text-amber-400 mr-2"></i> Graf Výživy & Makroživin
                     </h3>
-                    <!-- Tlačítka pro přepínání makroživin v grafu -->
-                    <div class="flex items-center bg-slate-900 p-1 rounded-lg border border-slate-700 text-xs font-semibold">
-                        <button onclick="setNutritionMetric('calories')" id="nutri-btn-calories" class="px-3 py-1.5 rounded-md bg-amber-500 text-slate-900 transition font-bold">Kalorie (kcal)</button>
-                        <button onclick="setNutritionMetric('carbs')" id="nutri-btn-carbs" class="px-3 py-1.5 rounded-md text-slate-400 hover:text-white transition">Sacharidy (g)</button>
-                        <button onclick="setNutritionMetric('protein')" id="nutri-btn-protein" class="px-3 py-1.5 rounded-md text-slate-400 hover:text-white transition">Bílkoviny (g)</button>
+                    <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs font-semibold">
+                        <button onclick="setNutritionMetric('calories')" id="nutri-btn-calories" class="px-3 py-1.5 rounded-lg bg-amber-500 text-slate-950 transition font-bold">Kalorie (kcal)</button>
+                        <button onclick="setNutritionMetric('carbs')" id="nutri-btn-carbs" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition">Sacharidy (g)</button>
+                        <button onclick="setNutritionMetric('protein')" id="nutri-btn-protein" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition">Bílkoviny (g)</button>
                     </div>
                 </div>
                 <div class="h-64 relative">
@@ -232,23 +292,23 @@
             </div>
 
             <!-- Historie Výživy -->
-            <div class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden">
-                <div class="p-4 border-b border-slate-700 flex justify-between items-center">
+            <div class="bg-slate-900/90 rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
+                <div class="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-900">
                     <h3 class="text-lg font-bold text-white">Historie Záznamů Stravy</h3>
-                    <span class="text-xs text-slate-400" id="nutri-logs-count">0 dnů</span>
+                    <span class="text-xs font-semibold px-2.5 py-1 bg-slate-800 text-slate-300 rounded-lg" id="nutri-logs-count">0 dnů</span>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm text-slate-300">
-                        <thead class="bg-slate-900/50 text-slate-400 text-xs uppercase border-b border-slate-700">
+                        <thead class="bg-slate-950/60 text-slate-400 text-xs uppercase border-b border-slate-800">
                             <tr>
-                                <th class="p-3">Datum</th>
-                                <th class="p-3">Kalorie</th>
-                                <th class="p-3">Sacharidy</th>
-                                <th class="p-3">Bílkoviny</th>
-                                <th class="p-3 text-right">Akce</th>
+                                <th class="p-3.5">Datum</th>
+                                <th class="p-3.5">Kalorie</th>
+                                <th class="p-3.5">Sacharidy</th>
+                                <th class="p-3.5">Bílkoviny</th>
+                                <th class="p-3.5 text-right">Akce</th>
                             </tr>
                         </thead>
-                        <tbody id="nutrition-history-tbody" class="divide-y divide-slate-700/50"></tbody>
+                        <tbody id="nutrition-history-tbody" class="divide-y divide-slate-800/60"></tbody>
                     </table>
                 </div>
             </div>
@@ -334,6 +394,36 @@
         let nutritionLogs = JSON.parse(localStorage.getItem('calisthenics_nutrition_logs_v3')) || defaultNutritionLogs;
         let editingNutritionLogId = null;
 
+        // VZOROVÁ JÍDLA S FOTKAMI
+        const defaultPresetMeals = [
+            {
+                id: 'pm1',
+                title: 'Tvaroh Milko + Vločky + Protein',
+                calories: 520,
+                carbs: 55,
+                protein: 50,
+                img: 'https://images.unsplash.com/photo-1517673400267-0251440c45dc?w=500&auto=format&fit=crop&q=80'
+            },
+            {
+                id: 'pm2',
+                title: 'Míchaná Vajíčka s Pečivem',
+                calories: 480,
+                carbs: 35,
+                protein: 32,
+                img: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?w=500&auto=format&fit=crop&q=80'
+            },
+            {
+                id: 'pm3',
+                title: 'Kuřecí Prsa s Rýží & Zeleninou',
+                calories: 680,
+                carbs: 75,
+                protein: 58,
+                img: 'https://images.unsplash.com/photo-1532550907401-a500c9a57435?w=500&auto=format&fit=crop&q=80'
+            }
+        ];
+
+        let presetMeals = JSON.parse(localStorage.getItem('calisthenics_presets_v1')) || defaultPresetMeals;
+
         let exerciseChartInstance = null;
         let nutritionChartInstance = null;
         let currentNutritionMetric = 'calories';
@@ -344,673 +434,4 @@
         } catch(e) {}
 
 
-        // --- LOGIKA TRÉNINKOVÉHO PLÁNU ---
-        function saveProgram() {
-            localStorage.setItem('calisthenics_program_v3', JSON.stringify(programData));
-        }
-
-        function toggleProgramEditMode() {
-            isProgramEditMode = !isProgramEditMode;
-            const btn = document.getElementById('edit-program-btn');
-            const addWeekBtn = document.getElementById('add-week-container');
-
-            if (isProgramEditMode) {
-                btn.innerHTML = `<i class="fa-solid fa-check mr-2"></i> Uložit Změny Plánu`;
-                btn.className = "bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-lg text-sm transition flex items-center";
-                addWeekBtn.classList.remove('hidden');
-            } else {
-                readInputsIntoProgramData();
-                saveProgram();
-                btn.innerHTML = `<i class="fa-solid fa-pen-to-square mr-2"></i> Upravit Plán`;
-                btn.className = "bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2 rounded-lg text-sm transition flex items-center";
-                addWeekBtn.classList.add('hidden');
-            }
-            renderProgram();
-        }
-
-        function readInputsIntoProgramData() {
-            programData.forEach(week => {
-                const weekTitleInput = document.getElementById(`week-title-${week.id}`);
-                if (weekTitleInput) week.title = weekTitleInput.value;
-
-                week.days.forEach(day => {
-                    const dayNameInput = document.getElementById(`day-name-${day.id}`);
-                    if (dayNameInput) day.name = dayNameInput.value;
-
-                    day.exercises.forEach(ex => {
-                        const exNameInput = document.getElementById(`ex-name-${ex.id}`);
-                        const exTargetInput = document.getElementById(`ex-target-${ex.id}`);
-                        if (exNameInput) ex.name = exNameInput.value;
-                        if (exTargetInput) ex.target = exTargetInput.value;
-                    });
-                });
-            });
-        }
-
-        function renderProgram() {
-            const container = document.getElementById('program-container');
-            container.innerHTML = '';
-
-            programData.forEach(week => {
-                const weekDiv = document.createElement('div');
-                weekDiv.className = "space-y-4 bg-slate-800/50 p-5 rounded-2xl border border-slate-700/80";
-
-                let weekHeaderHtml = '';
-                if (isProgramEditMode) {
-                    weekHeaderHtml = `
-                        <div class="flex items-center justify-between gap-3 mb-2">
-                            <input type="text" id="week-title-${week.id}" value="${week.title}" class="bg-slate-900 border border-slate-600 rounded px-3 py-1.5 font-bold text-white w-full text-base">
-                            <button onclick="deleteWeek('${week.id}')" class="text-red-400 hover:text-red-300 text-xs px-2 py-1"><i class="fa-solid fa-trash"></i> Smazat Blok</button>
-                        </div>
-                    `;
-                } else {
-                    weekHeaderHtml = `
-                        <h3 class="text-lg font-bold text-slate-200 flex items-center">
-                            <i class="fa-solid fa-layer-group text-brand-500 mr-2"></i> ${week.title}
-                        </h3>
-                    `;
-                }
-
-                let daysHtml = '<div class="grid md:grid-cols-2 gap-4">';
-                week.days.forEach(day => {
-                    daysHtml += `
-                        <div class="bg-slate-800 rounded-xl p-4 border border-slate-700/80">
-                            <div class="flex justify-between items-center mb-3">
-                                ${isProgramEditMode ? 
-                                    `<input type="text" id="day-name-${day.id}" value="${day.name}" class="bg-slate-900 border border-slate-600 rounded px-2 py-1 text-xs font-bold text-brand-500 w-full mr-2">
-                                     <button onclick="deleteDay('${week.id}', '${day.id}')" class="text-red-400 hover:text-red-300 text-xs"><i class="fa-solid fa-xmark"></i></button>` :
-                                    `<span class="font-bold text-brand-500 text-sm">${day.name}</span>`
-                                }
-                            </div>
-                            <ul class="space-y-2 text-sm text-slate-300">
-                    `;
-
-                    day.exercises.forEach(ex => {
-                        daysHtml += `
-                            <li class="flex justify-between items-center border-b border-slate-700/50 pb-1.5 gap-2">
-                                ${isProgramEditMode ? `
-                                    <input type="text" id="ex-name-${ex.id}" value="${ex.name}" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs w-2/3 text-white">
-                                    <input type="text" id="ex-target-${ex.id}" value="${ex.target}" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs w-1/3 text-amber-400 font-semibold">
-                                    <button onclick="deleteExercise('${week.id}', '${day.id}', '${ex.id}')" class="text-slate-500 hover:text-red-400 text-xs"><i class="fa-solid fa-trash"></i></button>
-                                ` : `
-                                    <span>${ex.name}</span>
-                                    <span class="font-semibold text-slate-100">${ex.target}</span>
-                                `}
-                            </li>
-                        `;
-                    });
-
-                    daysHtml += `</ul>`;
-
-                    if (isProgramEditMode) {
-                        daysHtml += `
-                            <button onclick="addExercise('${week.id}', '${day.id}')" class="mt-3 text-xs text-brand-500 hover:text-brand-400 font-semibold flex items-center">
-                                <i class="fa-solid fa-plus mr-1"></i> Přidat Cvik
-                            </button>
-                        `;
-                    }
-
-                    daysHtml += `</div>`;
-                });
-
-                if (isProgramEditMode) {
-                    daysHtml += `
-                        <div class="bg-slate-900/40 rounded-xl p-4 border border-dashed border-slate-700 flex items-center justify-center">
-                            <button onclick="addDay('${week.id}')" class="text-xs font-semibold text-slate-400 hover:text-white">
-                                <i class="fa-solid fa-plus mr-1 text-brand-500"></i> Přidat Den do tohoto Bloku
-                            </button>
-                        </div>
-                    `;
-                }
-
-                daysHtml += `</div>`;
-
-                weekDiv.innerHTML = weekHeaderHtml + daysHtml;
-                container.appendChild(weekDiv);
-            });
-        }
-
-        function addWeek() {
-            readInputsIntoProgramData();
-            programData.push({ id: 'w_' + Date.now(), title: 'NOVÝ TRÉNINKOVÝ BLOK', days: [] });
-            renderProgram();
-        }
-
-        function deleteWeek(weekId) {
-            readInputsIntoProgramData();
-            programData = programData.filter(w => w.id !== weekId);
-            renderProgram();
-        }
-
-        function addDay(weekId) {
-            readInputsIntoProgramData();
-            const week = programData.find(w => w.id === weekId);
-            if (week) {
-                week.days.push({ id: 'd_' + Date.now(), name: 'Nový Den', exercises: [] });
-            }
-            renderProgram();
-        }
-
-        function deleteDay(weekId, dayId) {
-            readInputsIntoProgramData();
-            const week = programData.find(w => w.id === weekId);
-            if (week) {
-                week.days = week.days.filter(d => d.id !== dayId);
-            }
-            renderProgram();
-        }
-
-        function addExercise(weekId, dayId) {
-            readInputsIntoProgramData();
-            const week = programData.find(w => w.id === weekId);
-            if (week) {
-                const day = week.days.find(d => d.id === dayId);
-                if (day) {
-                    day.exercises.push({ id: 'e_' + Date.now(), name: 'Nový Cvik', target: '3x 8-10' });
-                }
-            }
-            renderProgram();
-        }
-
-        function deleteExercise(weekId, dayId, exId) {
-            readInputsIntoProgramData();
-            const week = programData.find(w => w.id === weekId);
-            if (week) {
-                const day = week.days.find(d => d.id === dayId);
-                if (day) {
-                    day.exercises = day.exercises.filter(e => e.id !== exId);
-                }
-            }
-            renderProgram();
-        }
-
-
-        // --- LOGIKA ZÁZNAMNÍKU CVIKŮ ---
-        function saveExerciseLogs() {
-            localStorage.setItem('calisthenics_exercise_logs_v3', JSON.stringify(exerciseLogs));
-        }
-
-        function getAllUniqueExercises() {
-            const set = new Set(exerciseLogs.map(l => l.exercise));
-            if (set.size === 0) {
-                set.add('Full Front Lever');
-                set.add('HSPU (Zem)');
-            }
-            return Array.from(set);
-        }
-
-        function renderExerciseSelectOptions() {
-            const select = document.getElementById('input-exercise-select');
-            const chartFilter = document.getElementById('chart-exercise-filter');
-
-            const unique = getAllUniqueExercises();
-
-            let optionsHtml = '';
-            unique.forEach(ex => {
-                optionsHtml += `<option value="${ex}">${ex}</option>`;
-            });
-            optionsHtml += `<option value="ADD_NEW_CUSTOM">➕ Přidat nový cvik...</option>`;
-
-            select.innerHTML = optionsHtml;
-
-            let chartOptionsHtml = '';
-            unique.forEach(ex => {
-                chartOptionsHtml += `<option value="${ex}">${ex}</option>`;
-            });
-            chartFilter.innerHTML = chartOptionsHtml;
-        }
-
-        function handleExerciseSelectChange() {
-            const val = document.getElementById('input-exercise-select').value;
-            const customDiv = document.getElementById('custom-exercise-div');
-            if (val === 'ADD_NEW_CUSTOM') {
-                customDiv.classList.remove('hidden');
-            } else {
-                customDiv.classList.add('hidden');
-            }
-        }
-
-        // ÚPRAVA (TUŽTIČKA) CVIKU
-        function editExerciseLog(id) {
-            const log = exerciseLogs.find(l => l.id === id);
-            if (!log) return;
-
-            editingExerciseLogId = id;
-
-            document.getElementById('input-date').value = log.date;
-            
-            const select = document.getElementById('input-exercise-select');
-            const customDiv = document.getElementById('custom-exercise-div');
-            const customInput = document.getElementById('input-custom-exercise');
-
-            const exists = Array.from(select.options).some(opt => opt.value === log.exercise);
-            if (exists) {
-                select.value = log.exercise;
-                customDiv.classList.add('hidden');
-            } else {
-                select.value = 'ADD_NEW_CUSTOM';
-                customDiv.classList.remove('hidden');
-                customInput.value = log.exercise;
-            }
-
-            document.getElementById('input-sets').value = log.sets || 1;
-            document.getElementById('input-value').value = log.value;
-            document.getElementById('input-unit').value = log.unit || 'op.';
-
-            const submitBtn = document.getElementById('exercise-submit-btn');
-            submitBtn.innerHTML = `<i class="fa-solid fa-check mr-2"></i> Aktualizovat Cvik`;
-            submitBtn.className = "bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold py-2.5 px-6 rounded-lg transition text-sm flex items-center";
-
-            document.getElementById('exercise-form-card').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        document.getElementById('add-log-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const date = document.getElementById('input-date').value;
-            const selectVal = document.getElementById('input-exercise-select').value;
-            const customVal = document.getElementById('input-custom-exercise').value.trim();
-            const sets = parseInt(document.getElementById('input-sets').value) || 1;
-            const value = parseFloat(document.getElementById('input-value').value);
-            const unit = document.getElementById('input-unit').value;
-
-            let exerciseName = selectVal;
-            if (selectVal === 'ADD_NEW_CUSTOM') {
-                if (!customVal) return;
-                exerciseName = customVal;
-            }
-
-            if (!date || !exerciseName || isNaN(value)) return;
-
-            if (editingExerciseLogId) {
-                // Úprava existujícího záznamu
-                const idx = exerciseLogs.findIndex(l => l.id === editingExerciseLogId);
-                if (idx !== -1) {
-                    exerciseLogs[idx] = { id: editingExerciseLogId, date, exercise: exerciseName, sets, value, unit };
-                }
-                editingExerciseLogId = null;
-
-                const submitBtn = document.getElementById('exercise-submit-btn');
-                submitBtn.innerHTML = `<i class="fa-solid fa-floppy-disk mr-2"></i> Uložit Výsledek`;
-                submitBtn.className = "bg-brand-500 hover:bg-brand-600 text-slate-900 font-bold py-2.5 px-6 rounded-lg transition text-sm flex items-center";
-            } else {
-                // Nový záznam
-                const newLog = { id: Date.now().toString(), date, exercise: exerciseName, sets, value, unit };
-                exerciseLogs.push(newLog);
-            }
-
-            saveExerciseLogs();
-
-            document.getElementById('input-custom-exercise').value = '';
-            document.getElementById('input-value').value = '';
-            document.getElementById('custom-exercise-div').classList.add('hidden');
-
-            renderTrackerSection();
-        });
-
-        function deleteExerciseLog(id) {
-            exerciseLogs = exerciseLogs.filter(l => l.id !== id);
-            saveExerciseLogs();
-            renderTrackerSection();
-        }
-
-        function renderPRCards() {
-            const container = document.getElementById('prs-container');
-            container.innerHTML = '';
-
-            const exercises = getAllUniqueExercises();
-            exercises.forEach(ex => {
-                const logs = exerciseLogs.filter(l => l.exercise === ex);
-                if (logs.length === 0) return;
-
-                const maxVal = Math.max(...logs.map(l => l.value));
-                const unit = logs[0]?.unit || '';
-
-                const card = document.createElement('div');
-                card.className = "bg-slate-800 p-3.5 rounded-xl border border-slate-700 relative";
-                card.innerHTML = `
-                    <div class="text-xs text-slate-400 font-medium truncate">${ex}</div>
-                    <div class="text-xl font-black text-brand-500 mt-1">${maxVal} ${unit}</div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        function renderExerciseHistoryTable() {
-            const tbody = document.getElementById('exercise-history-tbody');
-            tbody.innerHTML = '';
-
-            const sorted = [...exerciseLogs].sort((a, b) => new Date(b.date) - new Date(a.date));
-            document.getElementById('logs-count').innerText = `${sorted.length} položek`;
-
-            if (sorted.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-500">Žádné zaznamenané výkony.</td></tr>`;
-                return;
-            }
-
-            sorted.forEach(log => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-800/50 transition";
-                const setsDisplay = log.sets ? `${log.sets}× ` : '';
-                tr.innerHTML = `
-                    <td class="p-3 text-slate-300 font-mono text-xs">${log.date}</td>
-                    <td class="p-3 font-medium text-white">${log.exercise}</td>
-                    <td class="p-3 font-bold text-brand-500">${setsDisplay}${log.value} ${log.unit || ''}</td>
-                    <td class="p-3 text-right">
-                        <button onclick="editExerciseLog('${log.id}')" class="text-slate-400 hover:text-amber-400 transition text-xs p-1 mr-1" title="Upravit">
-                            <i class="fa-solid fa-pen"></i>
-                        </button>
-                        <button onclick="deleteExerciseLog('${log.id}')" class="text-slate-500 hover:text-red-400 transition text-xs p-1" title="Smazat">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function updateExerciseChart() {
-            const chartCanvas = document.getElementById('exerciseChart');
-            if (!chartCanvas || typeof Chart === 'undefined') return;
-
-            const selectedExercise = document.getElementById('chart-exercise-filter').value;
-            if (!selectedExercise) return;
-
-            const ctx = chartCanvas.getContext('2d');
-            const filtered = exerciseLogs
-                .filter(l => l.exercise === selectedExercise)
-                .sort((a, b) => new Date(a.date) - new Date(a.date));
-
-            const labels = filtered.map(l => l.date);
-            const dataValues = filtered.map(l => l.value);
-            const unit = filtered[0]?.unit || '';
-
-            if (exerciseChartInstance) {
-                exerciseChartInstance.destroy();
-            }
-
-            exerciseChartInstance = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: `${selectedExercise} (${unit})`,
-                        data: dataValues,
-                        borderColor: '#14b8a6',
-                        backgroundColor: 'rgba(20, 184, 166, 0.15)',
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.3,
-                        pointBackgroundColor: '#14b8a6',
-                        pointRadius: 5
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { labels: { color: '#94a3b8' } } },
-                    scales: {
-                        x: { grid: { color: 'rgba(51, 65, 85, 0.4)' }, ticks: { color: '#94a3b8' } },
-                        y: { beginAtZero: true, grid: { color: 'rgba(51, 65, 85, 0.4)' }, ticks: { color: '#94a3b8' } }
-                    }
-                }
-            });
-        }
-
-        function renderTrackerSection() {
-            renderExerciseSelectOptions();
-            renderPRCards();
-            renderExerciseHistoryTable();
-            updateExerciseChart();
-        }
-
-
-        // --- LOGIKA VÝŽIVY & MAKROŽIVIN ---
-        function saveNutritionLogs() {
-            localStorage.setItem('calisthenics_nutrition_logs_v3', JSON.stringify(nutritionLogs));
-        }
-
-        // ÚPRAVA (TUŽTIČKA) VÝŽIVY
-        function editNutritionLog(id) {
-            const log = nutritionLogs.find(l => l.id === id);
-            if (!log) return;
-
-            editingNutritionLogId = id;
-
-            document.getElementById('nutri-date').value = log.date;
-            document.getElementById('nutri-calories').value = log.calories;
-            document.getElementById('nutri-carbs').value = log.carbs;
-            document.getElementById('nutri-protein').value = log.protein;
-
-            const submitBtn = document.getElementById('nutrition-submit-btn');
-            submitBtn.innerHTML = `<i class="fa-solid fa-check mr-2"></i> Aktualizovat Makra`;
-            submitBtn.className = "bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold py-2.5 px-6 rounded-lg transition text-sm flex items-center";
-
-            document.getElementById('nutrition-form-card').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        document.getElementById('add-nutrition-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const date = document.getElementById('nutri-date').value;
-            const calories = parseInt(document.getElementById('nutri-calories').value);
-            const carbs = parseInt(document.getElementById('nutri-carbs').value);
-            const protein = parseInt(document.getElementById('nutri-protein').value);
-
-            if (!date || isNaN(calories) || isNaN(carbs) || isNaN(protein)) return;
-
-            if (editingNutritionLogId) {
-                // Úprava označeného řádku
-                const idx = nutritionLogs.findIndex(l => l.id === editingNutritionLogId);
-                if (idx !== -1) {
-                    nutritionLogs[idx] = { id: editingNutritionLogId, date, calories, carbs, protein };
-                }
-                editingNutritionLogId = null;
-
-                const submitBtn = document.getElementById('nutrition-submit-btn');
-                submitBtn.innerHTML = `<i class="fa-solid fa-plus mr-2"></i> Uložit Makra`;
-                submitBtn.className = "bg-emerald-500 hover:bg-emerald-600 text-slate-900 font-bold py-2.5 px-6 rounded-lg transition text-sm flex items-center";
-            } else {
-                // Přičtení/vložení nového
-                const existingIdx = nutritionLogs.findIndex(l => l.date === date);
-                if (existingIdx !== -1) {
-                    nutritionLogs[existingIdx] = { id: nutritionLogs[existingIdx].id, date, calories, carbs, protein };
-                } else {
-                    nutritionLogs.push({ id: Date.now().toString(), date, calories, carbs, protein });
-                }
-            }
-
-            saveNutritionLogs();
-
-            document.getElementById('nutri-calories').value = '';
-            document.getElementById('nutri-carbs').value = '';
-            document.getElementById('nutri-protein').value = '';
-
-            renderNutritionSection();
-        });
-
-        function deleteNutritionLog(id) {
-            nutritionLogs = nutritionLogs.filter(l => l.id !== id);
-            saveNutritionLogs();
-            renderNutritionSection();
-        }
-
-        function setNutritionMetric(metric) {
-            currentNutritionMetric = metric;
-
-            const btnCal = document.getElementById('nutri-btn-calories');
-            const btnCarbs = document.getElementById('nutri-btn-carbs');
-            const btnProt = document.getElementById('nutri-btn-protein');
-
-            btnCal.className = metric === 'calories' ? "px-3 py-1.5 rounded-md bg-amber-500 text-slate-900 transition font-bold" : "px-3 py-1.5 rounded-md text-slate-400 hover:text-white transition";
-            btnCarbs.className = metric === 'carbs' ? "px-3 py-1.5 rounded-md bg-cyan-500 text-slate-900 transition font-bold" : "px-3 py-1.5 rounded-md text-slate-400 hover:text-white transition";
-            btnProt.className = metric === 'protein' ? "px-3 py-1.5 rounded-md bg-purple-500 text-slate-900 transition font-bold" : "px-3 py-1.5 rounded-md text-slate-400 hover:text-white transition";
-
-            updateNutritionChart();
-        }
-
-        function updateNutritionChart() {
-            const chartCanvas = document.getElementById('nutritionChart');
-            if (!chartCanvas || typeof Chart === 'undefined') return;
-
-            const ctx = chartCanvas.getContext('2d');
-            const sorted = [...nutritionLogs].sort((a, b) => new Date(a.date) - new Date(b.date));
-
-            const labels = sorted.map(l => l.date);
-
-            let dataValues = [];
-            let labelTitle = '';
-            let colorHex = '#f59e0b';
-            let bgHex = 'rgba(245, 158, 11, 0.15)';
-
-            if (currentNutritionMetric === 'calories') {
-                dataValues = sorted.map(l => l.calories);
-                labelTitle = 'Kalorie (kcal)';
-                colorHex = '#f59e0b';
-                bgHex = 'rgba(245, 158, 11, 0.15)';
-            } else if (currentNutritionMetric === 'carbs') {
-                dataValues = sorted.map(l => l.carbs);
-                labelTitle = 'Sacharidy (g)';
-                colorHex = '#06b6d4';
-                bgHex = 'rgba(6, 182, 212, 0.15)';
-            } else if (currentNutritionMetric === 'protein') {
-                dataValues = sorted.map(l => l.protein);
-                labelTitle = 'Bílkoviny (g)';
-                colorHex = '#a855f7';
-                bgHex = 'rgba(168, 85, 247, 0.15)';
-            }
-
-            if (nutritionChartInstance) {
-                nutritionChartInstance.destroy();
-            }
-
-            nutritionChartInstance = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: labelTitle,
-                        data: dataValues,
-                        borderColor: colorHex,
-                        backgroundColor: bgHex,
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.3,
-                        pointBackgroundColor: colorHex,
-                        pointRadius: 5
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { labels: { color: '#94a3b8' } } },
-                    scales: {
-                        x: { grid: { color: 'rgba(51, 65, 85, 0.4)' }, ticks: { color: '#94a3b8' } },
-                        y: { beginAtZero: false, grid: { color: 'rgba(51, 65, 85, 0.4)' }, ticks: { color: '#94a3b8' } }
-                    }
-                }
-            });
-        }
-
-        function renderNutritionTable() {
-            const tbody = document.getElementById('nutrition-history-tbody');
-            tbody.innerHTML = '';
-
-            const sorted = [...nutritionLogs].sort((a, b) => new Date(b.date) - new Date(a.date));
-            document.getElementById('nutri-logs-count').innerText = `${sorted.length} dnů`;
-
-            if (sorted.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">Žádné záznamy stravy.</td></tr>`;
-                return;
-            }
-
-            sorted.forEach(log => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-800/50 transition";
-                tr.innerHTML = `
-                    <td class="p-3 text-slate-300 font-mono text-xs">${log.date}</td>
-                    <td class="p-3 font-bold text-amber-400">${log.calories} kcal</td>
-                    <td class="p-3 font-semibold text-cyan-400">${log.carbs} g</td>
-                    <td class="p-3 font-semibold text-purple-400">${log.protein} g</td>
-                    <td class="p-3 text-right">
-                        <button onclick="editNutritionLog('${log.id}')" class="text-slate-400 hover:text-amber-400 transition text-xs p-1 mr-1" title="Upravit">
-                            <i class="fa-solid fa-pen"></i>
-                        </button>
-                        <button onclick="deleteNutritionLog('${log.id}')" class="text-slate-500 hover:text-red-400 transition text-xs p-1" title="Smazat">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function renderNutritionSection() {
-            renderNutritionTable();
-            updateNutritionChart();
-        }
-
-
-        // --- PREPÍNANÍ ZÁLOŽEK ---
-        function switchTab(tab) {
-            const btnProg = document.getElementById('tab-btn-program');
-            const btnTrack = document.getElementById('tab-btn-tracker');
-            const btnNutri = document.getElementById('tab-btn-nutrition');
-
-            const tabProg = document.getElementById('tab-program');
-            const tabTrack = document.getElementById('tab-tracker');
-            const tabNutri = document.getElementById('tab-nutrition');
-
-            [btnProg, btnTrack, btnNutri].forEach(btn => {
-                btn.className = "px-3 py-2 rounded-lg font-medium transition text-slate-400 hover:text-white hover:bg-slate-700";
-            });
-            [tabProg, tabTrack, tabNutri].forEach(t => t.classList.add('hidden'));
-
-            if (tab === 'program') {
-                tabProg.classList.remove('hidden');
-                btnProg.className = "px-3 py-2 rounded-lg font-semibold transition bg-brand-500 text-slate-900";
-                renderProgram();
-            } else if (tab === 'tracker') {
-                tabTrack.classList.remove('hidden');
-                btnTrack.className = "px-3 py-2 rounded-lg font-semibold transition bg-brand-500 text-slate-900";
-                renderTrackerSection();
-            } else if (tab === 'nutrition') {
-                tabNutri.classList.remove('hidden');
-                btnNutri.className = "px-3 py-2 rounded-lg font-semibold transition bg-brand-500 text-slate-900";
-                renderNutritionSection();
-            }
-        }
-
-        // INITIALIZACE & MAGIC LINK CONTROLLER
-        document.addEventListener('DOMContentLoaded', () => {
-            renderProgram();
-
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('addNutri') === '1') {
-                const cal = parseInt(urlParams.get('cal'));
-                const carbs = parseInt(urlParams.get('carbs'));
-                const prot = parseInt(urlParams.get('prot'));
-                
-                if (!isNaN(cal) && !isNaN(carbs) && !isNaN(prot)) {
-                    const today = new Date().toISOString().split('T')[0];
-                    const existingIdx = nutritionLogs.findIndex(l => l.date === today);
-                    if (existingIdx !== -1) {
-                        nutritionLogs[existingIdx].calories += cal;
-                        nutritionLogs[existingIdx].carbs += carbs;
-                        nutritionLogs[existingIdx].protein += prot;
-                    } else {
-                        nutritionLogs.push({ 
-                            id: Date.now().toString(), 
-                            date: today, 
-                            calories: cal, 
-                            carbs: carbs, 
-                            protein: prot 
-                        });
-                    }
-                    saveNutritionLogs();
-                    window.history.replaceState({}, document.title, window.location.pathname);
-                    switchTab('nutrition');
-                }
-            }
-        });
-    </script>
-</body>
-</html>
+        // --- LOGIKA TRÉNINKOVÉHO PLÁNU
