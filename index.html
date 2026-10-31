@@ -213,7 +213,7 @@
                             <input type="text" id="preset-title" required placeholder="např. Milko Tvaroh + Vločky" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-slate-400 mb-1">Nahrát novou fotku (Z mobilu/PC)</label>
+                            <label class="block text-xs font-semibold text-slate-400 mb-1">Fotka (Z mobilu/PC)</label>
                             <input type="file" id="preset-file" accept="image/*" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2 py-1.5 text-xs text-slate-300 focus:outline-none">
                         </div>
                         <div>
@@ -916,7 +916,11 @@
 
         // --- LOGIKA KATALOGU JÍDEL & VÝŽIVY ---
         function savePresetMeals() {
-            localStorage.setItem('calisthenics_presets_v2', JSON.stringify(presetMeals));
+            try {
+                localStorage.setItem('calisthenics_presets_v2', JSON.stringify(presetMeals));
+            } catch(e) {
+                alert("Paměť prohlížeče je plná! Zkus použít menší fotku nebo odkaz na fotku.");
+            }
         }
 
         function toggleNewMealModal() {
@@ -1028,6 +1032,38 @@
             renderNutritionSection();
         }
 
+        // Pomocná funkce pro kompresi velkých fotografií
+        function compressImage(file, callback) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const maxDim = 400;
+                    let width = img.width;
+                    let height = img.height;
+                    if (width > height) {
+                        if (width > maxDim) {
+                            height *= maxDim / width;
+                            width = maxDim;
+                        }
+                    } else {
+                        if (height > maxDim) {
+                            width *= maxDim / height;
+                            height = maxDim;
+                        }
+                    }
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    callback(canvas.toDataURL('image/jpeg', 0.7));
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
         document.getElementById('create-preset-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const title = document.getElementById('preset-title').value;
@@ -1071,11 +1107,9 @@
             };
 
             if (fileInput.files && fileInput.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(evt) {
-                    saveMeal(evt.target.result);
-                };
-                reader.readAsDataURL(fileInput.files[0]);
+                compressImage(fileInput.files[0], function(compressedBase64) {
+                    saveMeal(compressedBase64);
+                });
             } else {
                 saveMeal('');
             }
