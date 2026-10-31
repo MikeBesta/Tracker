@@ -195,7 +195,7 @@
                         <h3 class="text-xl font-black text-white flex items-center">
                             <i class="fa-solid fa-utensils text-emerald-400 mr-2.5"></i> Katalog Oblíbených Jídel
                         </h3>
-                        <p class="text-slate-400 text-xs mt-0.5">Jedním kliknutím přidáš svoje točené jídlo do dnešního přehledu stravy.</p>
+                        <p class="text-slate-400 text-xs mt-0.5">Kliknutím načteš jídlo do formuláře ručního zápisu níže.</p>
                     </div>
                     <button onclick="toggleNewMealModal()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs transition shadow-lg shadow-emerald-500/20 flex items-center self-start sm:self-auto">
                         <i class="fa-solid fa-plus mr-1.5"></i> Vytvořit Nové Jídlo
@@ -970,7 +970,7 @@
                             </div>
                         </div>
                         <button onclick="logPresetMealToToday('${meal.id}')" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-2 px-3 rounded-xl transition text-xs flex items-center justify-center shadow-md shadow-emerald-500/10">
-                            <i class="fa-solid fa-plus mr-1.5"></i> Přidat do dneška
+                            <i class="fa-solid fa-plus mr-1.5"></i> Načíst do formuláře
                         </button>
                     </div>
                 `;
@@ -1007,29 +1007,32 @@
             renderPresetMeals();
         }
 
+        // NAČTENÍ JÍDLA DO FORMULÁŘE RUČNÍHO ZÁPISU MÍSTO PŘÍMÉHO ULOŽENÍ DO HISTORIE
         function logPresetMealToToday(id) {
             const meal = presetMeals.find(m => m.id === id);
             if (!meal) return;
 
-            const today = new Date().toISOString().split('T')[0];
-            const existingIdx = nutritionLogs.findIndex(l => l.date === today);
+            const calInput = document.getElementById('nutri-calories');
+            const carbsInput = document.getElementById('nutri-carbs');
+            const protInput = document.getElementById('nutri-protein');
+            const dateInput = document.getElementById('nutri-date');
 
-            if (existingIdx !== -1) {
-                nutritionLogs[existingIdx].calories += meal.calories;
-                nutritionLogs[existingIdx].carbs += meal.carbs;
-                nutritionLogs[existingIdx].protein += meal.protein;
-            } else {
-                nutritionLogs.push({
-                    id: Date.now().toString(),
-                    date: today,
-                    calories: meal.calories,
-                    carbs: meal.carbs,
-                    protein: meal.protein
-                });
+            if (!dateInput.value) {
+                dateInput.value = new Date().toISOString().split('T')[0];
             }
 
-            saveNutritionLogs();
-            renderNutritionSection();
+            const currentCal = parseInt(calInput.value) || 0;
+            const currentCarbs = parseInt(carbsInput.value) || 0;
+            const currentProt = parseInt(protInput.value) || 0;
+
+            calInput.value = currentCal + meal.calories;
+            carbsInput.value = currentCarbs + meal.carbs;
+            protInput.value = currentProt + meal.protein;
+
+            const formCard = document.getElementById('nutrition-form-card');
+            if (formCard) {
+                formCard.scrollIntoView({ behavior: 'smooth' });
+            }
         }
 
         // Pomocná funkce pro kompresi velkých fotografií
